@@ -13,8 +13,9 @@ class Camera(BaseCamera):
     def frames():
         # 此处为自己的视频流url 格式 "rtsp://%s:%s@%s//Streaming/Channels/%d" % (name, pwd, ip, channel)
         # 例如
-        # source = 'rtmp://8.130.83.55:1935/mylive/6'
-        source = 'rtsp://8.130.83.55:8554/live'
+        # source = 'rtmp://8.130.83.55:1935/mylive'
+        # source = 'rtsp://8.130.83.55:8554/live'
+        source = '0'
         dataset = LoadStreams(source)
         for im0s in dataset:
             im0 = im0s[0].copy()

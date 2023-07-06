@@ -1,9 +1,8 @@
-from entity.SysManager import User
+from entity.SysManager import SysManager as User
 from config import sqlInit
 from sqlalchemy.orm import sessionmaker
 import logging
 from sqlalchemy import or_
-
 
 Session = sessionmaker(bind=sqlInit.db)
 
@@ -18,7 +17,7 @@ def is_null(username, password):
 def is_existed(username, password):
     session = Session()
     try:
-        result = session.query(User).filter(User.username==username,User.password==password).first()
+        result = session.query(User).filter(User.username == username, User.psw == password).first()
     except Exception as e:
         logging.error(e)
         return False
@@ -29,7 +28,7 @@ def is_existed(username, password):
 def get_sys_user_by_id(id):
     session = Session()
     try:
-        result = session.query(User).filter(User.ID == id).first()
+        result = session.query(User).filter(User.userID == id).first()
     except Exception as e:
         logging.error(e)
         return None
@@ -52,7 +51,7 @@ def get_sys_user_count(name):
     session = Session()
     try:
         result = session.query(User).filter(or_(User.username.like("%" + name + "%"),
-                                                User.REAL_NAME.like("%" + name + "%"))).count()
+                                                User.realname.like("%" + name + "%"))).count()
     except Exception as e:
         logging.error(e)
         return None
@@ -63,7 +62,7 @@ def get_sys_user_count(name):
 def get_sys_user_count_by_gender(sex):
     session = Session()
     try:
-        result = session.query(User).filter(User.SEX == sex, User.REMOVE == 0).count()
+        result = session.query(User).filter(User.sex == sex).count()
     except Exception as e:
         logging.error(e)
         return None
@@ -75,7 +74,7 @@ def get_sys_user_info_list(page, pagesize, name):
     session = Session()
     try:
         result = session.query(User).filter(or_(User.username.like("%" + name + "%"),
-                                                User.REAL_NAME.like("%" + name + "%"))).limit(pagesize).offset(
+                                                User.realname.like("%" + name + "%"))).limit(pagesize).offset(
             (page - 1) * pagesize).all()
     except Exception as e:
         logging.error(e)
@@ -84,18 +83,14 @@ def get_sys_user_info_list(page, pagesize, name):
     return result
 
 
-def add_sys_user(username, password, REAL_NAME, SEX, EMAIL,
-                 PHONE, MOBILE, DESCRIPTION, ISACTIVE, CREATEBY,
-                 REMOVE):
+def add_sys_user(username, psw, REAL_NAME, SEX, EMAIL, PHONE):
     session = Session()
-    user = User(username=username, password=password, REAL_NAME=REAL_NAME, SEX=SEX, EMAIL=EMAIL, PHONE=PHONE,
-                MOBILE=MOBILE,
-                DESCRIPTION=DESCRIPTION, ISACTIVE=ISACTIVE, CREATEBY=CREATEBY, REMOVE=REMOVE)
+    user = User(username=username, psw=psw, realname=REAL_NAME, sex=SEX, email=EMAIL, phone=PHONE)
     try:
         result = session.add(user)
         session.commit()
         this = session.query(User).filter(User.username == username).first()
-        session.query(User).filter(User.username == username).update({'CREATEBY': this.ID, 'UPDATEBY': this.ID})
+        session.query(User).filter(User.username == username).update({'CREATEBY': this.userID, 'UPDATEBY': this.userID})
         session.commit()
     except Exception as e:
         logging.error(e)
@@ -105,12 +100,10 @@ def add_sys_user(username, password, REAL_NAME, SEX, EMAIL,
 
 
 def update_sys_user_by_id(id, username, REAL_NAME, SEX, EMAIL,
-                          PHONE, MOBILE, DESCRIPTION, ISACTIVE, UPDATEBY,
-                          REMOVE):
+                          PHONE):
     session = Session()
 
-    user = User(ID=id, username=username, REAL_NAME=REAL_NAME, SEX=SEX, EMAIL=EMAIL, PHONE=PHONE, MOBILE=MOBILE,
-                DESCRIPTION=DESCRIPTION, ISACTIVE=ISACTIVE, UPDATEBY=id, REMOVE=REMOVE)
+    user = User(userID=id, username=username, realname=REAL_NAME, sex=SEX, email=EMAIL, phone=PHONE)
     try:
         u = user.__dict__
         u.pop("_sa_instance_state")
@@ -126,10 +119,10 @@ def update_sys_user_by_id(id, username, REAL_NAME, SEX, EMAIL,
 def update_sys_user_password_by_id(id, old_password, new_password):
     session = Session()
     try:
-        password = session.query(User).filter(User.ID == id).first()
-        if password.password != old_password:
+        password = session.query(User).filter(User.userID == id).first()
+        if password.psw != old_password:
             return 1
-        row = session.query(User).filter(User.ID == id).update({'password': new_password})
+        row = session.query(User).filter(User.userID == id).update({'psw': new_password})
         session.commit()
     except Exception as e:
         logging.error(e)
@@ -141,7 +134,7 @@ def update_sys_user_password_by_id(id, old_password, new_password):
 def delete_old_person_info_by_id(id):
     session = Session()
     try:
-        session.query(User).filter(User.ID == id).delete()
+        session.query(User).filter(User.userID == id).delete()
         session.commit()
     except Exception as e:
         logging.error(e)

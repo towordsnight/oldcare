@@ -1,11 +1,7 @@
-
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String,DateTime,CHAR
-
-
+from sqlalchemy import Column, Integer, String, DateTime, CHAR
 
 Base = declarative_base()
-
 
 
 class Event(Base):
