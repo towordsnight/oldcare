@@ -23,10 +23,6 @@ def make_error_response(data,messsage):
     response['data']=data
     return response
 
-# @index_page.route("/")
-# def text():
-#     return "text/html"
-
 
 @index_page.route("/text_same")
 def text_same():
