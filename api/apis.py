@@ -54,7 +54,7 @@ def hello_world():
 # def index():
 #     return redirect(url_for('user_login'))
 
-@index_page.route('/user_login',methods=['GET','POST'])
+@index_page.route('/login',methods=['GET','POST'])
 def user_login():
     if request.method=='POST':  # 注册发送的请求为POST请求
         username = request.form['username']
