@@ -30,7 +30,7 @@ def make_error_response(data,messsage):
 
 @index_page.route("/text_same")
 def text_same():
-    response = make_response("text/html", 200)
+    response = make_response("templates/test.html", 200)
     return response
 
 
