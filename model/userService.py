@@ -1,4 +1,4 @@
-from entity.user import User
+from entity.SysManager import User
 from config import sqlInit
 from sqlalchemy.orm import sessionmaker
 import logging

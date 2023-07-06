@@ -1,4 +1,4 @@
-from entity.event_info import EventInfo
+from entity.Event import Event as EventInfo
 from config import sqlInit
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import func
