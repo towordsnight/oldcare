@@ -103,11 +103,23 @@ def update_sys_user_by_id(id, username, REAL_NAME, SEX, EMAIL,
                           PHONE):
     session = Session()
 
-    user = User(userID=id, username=username, realname=REAL_NAME, sex=SEX, email=EMAIL, phone=PHONE)
+    user = User()
+    if id is not None:
+        user.userID = id
+    if username is not None:
+        user.username = username
+    if REAL_NAME is not None:
+        user.realname = REAL_NAME
+    if SEX is not None:
+        user.sex = SEX
+    if EMAIL is not None:
+        user.email = EMAIL
+    if PHONE is not None:
+        user.phone = PHONE
     try:
         u = user.__dict__
         u.pop("_sa_instance_state")
-        row = session.query(User).filter(User.ID == id).update(u)
+        row = session.query(User).filter(User.userID == id).update(u)
         session.commit()
     except Exception as e:
         logging.error(e)
@@ -141,3 +153,7 @@ def delete_old_person_info_by_id(id):
         return False
     session.close()
     return True
+
+
+if __name__ == '__main__':
+    update_sys_user_by_id(1, "fbf", "iaven", "male", "1245", "153")

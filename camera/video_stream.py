@@ -3,6 +3,7 @@ from threading import Thread
 import cv2
 
 
+
 class LoadStreams:  # multiple IP or RTSP cameras
     def __init__(self, sources):
         sources = [sources]

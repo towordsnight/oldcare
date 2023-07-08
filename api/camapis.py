@@ -44,8 +44,15 @@ def genWeb(camera):
     maxDelay = 0.5  # 最大容许延时
     startTime = time()  # 开始时间
     frames = 0
+
     while True:
         frame = camera.get_frame()
+
+
+
+
+
+
         frames += 1
         # 延时小于最大容许延时才进行识别
         if frames > (time() - startTime - maxDelay) * fps:
