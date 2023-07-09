@@ -36,6 +36,8 @@ def get_sys_user_by_id(id):
     return result
 
 
+
+
 def get_sys_user_by_username(username):
     session = Session()
     try:
@@ -155,5 +157,5 @@ def delete_old_person_info_by_id(id):
     return True
 
 
-if __name__ == '__main__':
-    update_sys_user_by_id(1, "fbf", "iaven", "male", "1245", "153")
+# if __name__ == '__main__':
+#     update_sys_user_by_id(1, "fbf", "iaven", "male", "1245", "153")

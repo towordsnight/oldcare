@@ -18,6 +18,16 @@ def get_old_person_info_by_id(id):
     session.close()
     return result
 
+def get_old_person_info_by_idcard(idcard):
+    session = Session()
+    try:
+        result = session.query(OldPersonInfo).filter(OldPersonInfo.id_card == idcard).all()
+    except Exception as e:
+        logging.error(e)
+        return None
+    session.close()
+    return result
+
 
 def get_old_person_info_by_name(username):
     session = Session()
@@ -140,6 +150,21 @@ def add_old_person_info(username, age, gender, phone, id_card, birthday, checkin
     session.close()
     return p
 
+def add_old_person(OldPersonInfo):
+    session = Session()
+    p = {}
+    try:
+        result = session.add(OldPersonInfo)
+        session.flush()
+        p = sqlInit.query_to_dict(OldPersonInfo)
+        # session.query(OldPersonInfo).filter(OldPersonInfo.id==p.id).update({'imgset_dir':p.id,'profile_photo':p.id+".jpg"})
+        session.commit()
+    except Exception as e:
+        logging.error(e)
+        return False
+    session.close()
+    return True
+
 
 def update_oldperson_info_by_id(ID, username, age, gender, phone, id_card, birthday, checkin_date, checkout_date,
                                 address, imgset_dir,
@@ -216,6 +241,8 @@ def delete_old_person_info_by_id(id):
         return False
     session.close()
     return True
+
+
 
 
 if __name__ == '__main__':

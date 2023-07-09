@@ -19,6 +19,16 @@ def get_volunteer_info_by_id(id):
     session.close()
     return result
 
+def get_volunteer_info_by_idcard(idcard):
+    session = Session()
+    try:
+        result = session.query(VolunteerInfo).filter(VolunteerInfo.id_card == idcard).first()
+    except Exception as e:
+        logging.error(e)
+        return None
+    session.close()
+    return result
+
 
 def get_volunteer_info_by_name(name):
     session = Session()
@@ -100,13 +110,49 @@ def add_volunteer_info(username, age, gender, phone, id_card, checkin_date, desc
     session.close()
     return p
 
+def add_volunteer(VolunteerInfo):
+    session = Session()
+    p = None
+    try:
+        result = session.add(VolunteerInfo)
+        session.flush()
+        p = sqlInit.query_to_dict(VolunteerInfo)
+        # session.query(VolunteerInfo).filter(VolunteerInfo.id==p.id).update({'imgset_dir':p.id,'profile_photo':p.id+".jpg"})
+        session.commit()
+    except Exception as e:
+        logging.error(e)
+        return None
+    session.close()
+    return p
 
-def update_volunteer_info_by_id(id, username, gender, phone, id_card, birthday, checkin_date, checkout_date,
-                                DESCRIPTION, UPDATEBY):
+
+def update_volunteer_info_by_id(id, username, gender, age, phone, id_card, checkin_date, checkout_date,
+                                DESCRIPTION, imgset_dir, profile_photo, creatby):
     session = Session()
 
-    person = VolunteerInfo(volunteerID=id, volunteerName=username, gender=gender, phone=phone, id_card=id_card,
-                           checkin_date=checkin_date, checkout_date=checkout_date, description=DESCRIPTION)
+    person = VolunteerInfo()
+    if username is not None:
+        person.volunteerName = username
+    if gender is not None:
+        person.gender = gender
+    if age is not None:
+        person.age = age
+    if phone is not None:
+        person.phone = phone
+    if id_card is not None:
+        person.id_card = id_card
+    if checkin_date is not None:
+        person.checkin_date = checkin_date
+    if checkout_date is not None:
+        person.checkout_date = checkout_date
+    if DESCRIPTION is not None:
+        person.description = DESCRIPTION
+    if imgset_dir is not None:
+        person.imgset_dir = imgset_dir
+    if profile_photo is not None:
+        person.profile_photo = profile_photo
+    if creatby is not None:
+        person.createby = creatby
     try:
         u = person.__dict__
         u.pop("_sa_instance_state")
@@ -119,10 +165,9 @@ def update_volunteer_info_by_id(id, username, gender, phone, id_card, birthday, 
     return True
 
 
-def delete_volunteer_info_by_id(id, UPDATEBY):
+def delete_volunteer_info_by_id(id):
     session = Session()
     try:
-        dt = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         session.query(VolunteerInfo).filter(VolunteerInfo.volunteerID == id).delete()
         session.commit()
     except Exception as e:
