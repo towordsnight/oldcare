@@ -6,6 +6,7 @@ import jwt
 from model.userService import *
 from model.elderly_info import *
 from model.volunteer_info import *
+from entity.Elderly import Elderly
 
 index_page = Blueprint("index_page", __name__)
 
@@ -134,11 +135,12 @@ def admin_register():
 
 
 
-@index_page.route('/elderly', methods=['GET'])
+@index_page.route('/elderly', methods=['POST'])
 def get_elderly_byname():
     data = request.get_json()
     #根据elderlyName查询数据库中对应的所有信息
     elderly = get_old_person_info_by_name(data.get('elderlyName'))
+    print(data.get('elderlyName'))
     # 如果没有找到对应的老人信息
     if not elderly:
         response = {
@@ -151,6 +153,7 @@ def get_elderly_byname():
         # 构建响应数据
         # 展示该老人所有信息
         elderly_info = {
+            'elderlyID': elderly.elderlyID,
             'elderlyName': elderly.elderlyName,
             'age': elderly.age,
             'gender': elderly.gender,
@@ -182,9 +185,92 @@ def get_elderly_byname():
         }
         return jsonify(response), 200
 
+@index_page.route('/elderly_namelike', methods=['POST'])
+def get_old_person_info():
+    data = request.get_json()
+    #根据elderlyName查询数据库中对应的所有信息
+    elderlys = get_old_person_info_list(data.get('elderlyName'))
+    # 如果没有找到对应的老人信息
+    if elderlys is None:
+        response = {
+            'error': '不存在',
+        }
+        return jsonify(response), 200
+
+    elderlys_list = []
+
+    for elderly in elderlys:
+        elderly_info = {
+            'elderlyID': elderly.elderlyID,
+            'elderlyName': elderly.elderlyName,
+            'age': elderly.age,
+            'gender': elderly.gender,
+            'id_card': elderly.id_card,
+            'birthday': elderly.birthday,
+            'checkin_date': elderly.checkin_date,
+            'checkout_date': elderly.checkout_date,
+            'address': elderly.address,
+            'phone': elderly.phone,
+            'imgset_dir': elderly.imgset_dir,
+            'profile_photo': elderly.profile_photo,
+            'room_number': elderly.room_number,
+            'first_guardian_name': elderly.first_guardian_name,
+            'first_guardian_relationship': elderly.first_guardian_relationship,
+            'first_guardian_phone': elderly.first_guardian_phone,
+            'second_guardian_name': elderly.second_guardian_name,
+            'second_guardian_relationship': elderly.second_guardian_relationship,
+            'second_guardian_phone': elderly.second_guardian_phone,
+            'health_state': elderly.health_state,
+            'description': elderly.description,
+            'created': elderly.created,
+            'createby': elderly.createby
+        }
+        elderlys_list.append(elderly_info)
+    response = {
+        'status': 'success',
+        'data': elderlys_list
+    }
+    return response
+
 @index_page.route('/all_elderly', methods=['GET'])
 def get_elderly_list():
-    return get_old_person_infoall()
+    elderlys_list = []
+
+    elderlys = get_old_person_infoall()
+    for elderly in elderlys:
+        elderly_info = {
+            'elderlyID': elderly.elderlyID,
+            'elderlyName': elderly.elderlyName,
+            'age': elderly.age,
+            'gender': elderly.gender,
+            'id_card': elderly.id_card,
+            'birthday': elderly.birthday,
+            'checkin_date': elderly.checkin_date,
+            'checkout_date': elderly.checkout_date,
+            'address': elderly.address,
+            'phone': elderly.phone,
+            'imgset_dir': elderly.imgset_dir,
+            'profile_photo': elderly.profile_photo,
+            'room_number': elderly.room_number,
+            'first_guardian_name': elderly.first_guardian_name,
+            'first_guardian_relationship': elderly.first_guardian_relationship,
+            'first_guardian_phone': elderly.first_guardian_phone,
+            'second_guardian_name': elderly.second_guardian_name,
+            'second_guardian_relationship': elderly.second_guardian_relationship,
+            'second_guardian_phone': elderly.second_guardian_phone,
+            'health_state': elderly.health_state,
+            'description': elderly.description,
+            'created': elderly.created,
+            'createby': elderly.createby
+        }
+        elderlys_list.append(elderly_info)
+    response = {
+        'status': 'success',
+        'data': {
+            'elderly': elderlys_list
+        }
+    }
+    return response
 
 
 
@@ -193,68 +279,15 @@ elderly_list = []
 @index_page.route('/elderly/add-one', methods=['POST'])
 def add_eld():
     data = request.get_json()
-    added_elderlys = []
-    for elderly_data in data:
-        result = add_elderly(elderly_data)
-        if 'error' in result:
-            return jsonify({'error': result['error']}), 400
-        added_elderlys.append(result)
-
-    return {'msg': '添加成功', 'elderly': added_elderlys}
-
-def add_elderly(data):
-    # 必填字段
-    required_fields = ['elderlyName', 'age', 'gender', 'id_card', 'first_guardian_name', 'first_guardian_phone', 'first_guardian_relationship']
-    missing_fields = [field for field in required_fields if field not in data]
-
-    if missing_fields:
-        return {'error': f'Missing required fields: {", ".join(missing_fields)}'}
-
-    # 检查身份证号是否已存在
-    ifelder = get_old_person_info_by_idcard(data['id_card'])
-    if ifelder is not None:
-        return {'error': 'The same idcard,Elderly already exists'}
-
-
-    # 创建时间和创建人
-    created = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    # 从会话中获取当前用户信息
-    username = session['username']
-    # 如果会话中没有当前用户信息，则返回未登录错误
-    if not username:
-        return jsonify({'error': '用户未登录'}), 401
-    createby = username
-
-    # 添加到老人列表
-    elderly = {
-        'elderlyName': data['elderlyName'],
-        'age': data.get('age'),
-        'gender': data['gender'],
-        'id_card': data['id_card'],
-        'birthday': data.get('birthday'),
-        'checkin_date': data.get('checkin_date'),
-        'checkout_date': data.get('checkout_date'),
-        'address': data.get('address'),
-        'phone': data.get('phone'),
-        'imgset_dir': data.get('imgset_dir'),
-        'profile_photo': data.get('profile_photo'),
-        'room_number': data.get('room_number'),
-        'first_guardian_name': data['first_guardian_name'],
-        'first_guardian_relationship': data.get('first_guardian_relationship'),
-        'first_guardian_phone': data['first_guardian_phone'],
-        'second_guardian_name': data.get('second_guardian_name'),
-        'second_guardian_relationship': data.get('second_guardian_relationship'),
-        'second_guardian_phone': data.get('second_guardian_phone'),
-        'health_state': data.get('health_state'),
-        'description': data.get('description'),
-        'created': created,
-        'createby': createby
-    }
-    if add_old_person(elderly):
-        elderly_list.append(elderly)
-        return elderly_list
-    return jsonify({'error': '添加失败'}), 405
-
+    if add_old_person_info(data.get('elderlyName'),data.get('age'),data.get('gender'),data.get('phone'),data.get('id_card'),
+                           data.get('birthday'),data.get('checkin_date'),data.get('checkout_date'),data.get('address'),
+                           data.get('imgset_dir'),data.get('profile_photo'),data.get('room_number'),
+                           data.get('first_guardian_name'),data.get('first_guardian_relationship'),data.get('first_guardian_phone'),
+                           data.get('second_guardian_name'),data.get('second_guardian_relationship'),data.get('second_guardian_phone'),
+                           data.get('health_state'),data.get('description'),data.get('createby')
+                           ) is not None:
+        return {'status': 'success'}
+    return {'status': 'error'}
 
 
 # 更新老人信息接口
@@ -285,7 +318,7 @@ def delete_elderly(elderly_id):
         return jsonify({'error': '未找到该老人信息'}), 404
 
 
-@index_page.route('/volunteer', methods=['GET'])
+@index_page.route('/volunteer', methods=['POST'])
 def get_volunteer():
     data = request.get_json()
     # 根据义工姓名查询数据库中对应的所有信息
@@ -324,9 +357,42 @@ def get_volunteer():
         }
         return jsonify(response), 200
 
-@index_page.route('/all_volunteer', methods=['GET'])
-def get_allvol():
-    return get_volunteer_info_all()
+
+@index_page.route('/volunteerlike', methods=['POST'])
+def get_vollike():
+    data = request.get_json()
+    #根据elderlyName查询数据库中对应的所有信息
+    vols = get_volunterr_info_list(data.get('volunteerName'))
+    # 如果没有找到对应的老人信息
+    if vols is None:
+        response = {
+            'error': '不存在',
+        }
+        return jsonify(response), 200
+
+    vols_list = []
+
+    for volunteer in vols:
+        volunteer_info = {
+            'volunteerName': volunteer.volunteerName,
+            'age': volunteer.age,
+            'gender': volunteer.gender,
+            'id_card': volunteer.id_card,
+            'checkin_date': volunteer.checkin_date,
+            'checkout_date': volunteer.checkout_date,
+            'phone': volunteer.phone,
+            'imgset_dir': volunteer.imgset_dir,
+            'profile_photo': volunteer.profile_photo,
+            'description': volunteer.description,
+            'created': volunteer.created,
+            'createby': volunteer.createby
+        }
+        vols_list.append(volunteer_info)
+    response = {
+        'status': 'success',
+        'data': vols_list
+    }
+    return response
 
 
 @index_page.route('/volunteer/<int:volunteer_id>', methods=['DELETE'])
@@ -361,60 +427,13 @@ volunteer_list = []
 @index_page.route('/volunteer/add-one', methods=['POST'])
 def add_volunt():
     data = request.get_json()
-    added_volunteers = []
-    for volunteer_data in data:
-        result = add_volunteer(volunteer_data)
-        if 'error' in result:
-            return jsonify({'error': result['error']}), 400
-        added_volunteers.append(result)
+    if add_volunteer_info(data.get('volunteerName'),data.get('age'),data.get('gender'),
+                          data.get('id_card'),data.get('checkin_date'),data.get('checkout_date'),
+                          data.get('phone'),data.get('description'),data.get('createby')
+                          ) is not None:
+        return {'status': 'success'}
 
-    return {'msg': '添加成功', 'volunteer': added_volunteers}
-
-
-def add_volunteer(data):
-    # 必填字段
-    required_fields = ['volunteerName', 'age', 'gender', 'id_card', 'first_guardian_name', 'first_guardian_phone',
-                       'first_guardian_relationship']
-    missing_fields = [field for field in required_fields if field not in data]
-
-    if missing_fields:
-        return {'error': f'Missing required fields: {", ".join(missing_fields)}'}
-
-    # 检查身份证号是否已存在
-    ifvolunteer = get_volunteer_info_by_idcard(data['id_card'])
-    if ifvolunteer:
-        return {'error': 'The same idcard, Volunteer already exists'}
-
-    # 创建时间和创建人
-    created = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    # 从会话中获取当前用户信息
-    username = session.get('username')
-    # 如果会话中没有当前用户信息，则返回未登录错误
-    if not username:
-        return {'error': '用户未登录'}, 401
-    createby = username
-
-    # 添加到义工列表
-    volunteer = {
-        'volunteerName': data['volunteerName'],
-        'age': data.get('age'),
-        'gender': data['gender'],
-        'id_card': data['id_card'],
-        'checkin_date': data.get('checkin_date'),
-        'checkout_date': data.get('checkout_date'),
-        'phone': data.get('phone'),
-        'imgset_dir': data.get('imgset_dir'),
-        'profile_photo': data.get('profile_photo'),
-        'description': data.get('description'),
-        'created': created,
-        'createby': createby
-    }
-
-    if add_volunteer(volunteer):
-        volunteer_list.append(volunteer)
-        return volunteer_list
-    return {'error': 'operation failed'}
-
+    return {'status': 'error'}
 
 
 

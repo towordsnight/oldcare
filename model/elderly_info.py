@@ -50,15 +50,13 @@ def get_old_person_infoall():
     return result
 
 
-def get_old_person_info_list(page, pagesize, username):
+def get_old_person_info_list(username):
     session = Session()
     try:
         if username == None:
-            result = session.query(OldPersonInfo).filter().limit(pagesize).offset((page - 1) * pagesize).all()
+            result = session.query(OldPersonInfo).filter().all()
         else:
-            result = session.query(OldPersonInfo).filter(OldPersonInfo.elderlyName.like("%" + username + "%")).limit(
-                pagesize).offset(
-                (page - 1) * pagesize).all()
+            result = session.query(OldPersonInfo).filter(OldPersonInfo.elderlyName.like("%" + username + "%")).all()
     except Exception as e:
         logging.error(e)
         return None

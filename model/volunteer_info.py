@@ -29,15 +29,6 @@ def get_volunteer_info_by_idcard(idcard):
     session.close()
     return result
 
-def get_volunteer_info_all():
-    session = Session()
-    try:
-        result = session.query(VolunteerInfo).filter().all()
-    except Exception as e:
-        logging.error(e)
-        return None
-    session.close()
-    return result
 
 def get_volunteer_info_by_name(name):
     session = Session()
@@ -50,14 +41,13 @@ def get_volunteer_info_by_name(name):
     return result
 
 
-def get_volunterr_info_list(page, pagesize, username):
+def get_volunterr_info_list(username):
     session = Session()
     try:
         if username == None:
-            result = session.query(VolunteerInfo).filter().limit(pagesize).offset((page - 1) * pagesize).all()
+            result = session.query(VolunteerInfo).filter().all()
         else:
-            result = session.query(VolunteerInfo).filter(VolunteerInfo.volunteerName.like("%" + username + "%")).limit(pagesize).offset(
-                (page - 1) * pagesize).all()
+            result = session.query(VolunteerInfo).filter(VolunteerInfo.volunteerName.like("%" + username + "%")).all()
     except Exception as e:
         logging.error(e)
         return None
@@ -100,11 +90,11 @@ def get_volunteer_checkout_count_by_day(today, tomorrow):
     return result
 
 
-def add_volunteer_info(username, age, gender, phone, id_card, checkin_date, description, createby):
+def add_volunteer_info(username, age, gender, id_card, checkin_date, checkout_date, phone,description, createby):
     session = Session()
-    person = VolunteerInfo(volunteerName=username, age=age, gender=gender, phone=phone, id_card=id_card,
+    person = VolunteerInfo(volunteerName=username, age=age, gender=gender, phone=phone, id_card=id_card,checkout_date=checkout_date,
                            checkin_date=checkin_date, profile_photo=id_card + ".jpg", description=description,
-                           createby=createby, created=time.localtime())
+                           createby=createby, created=time.localtime(), imgset_dir="img\\volunteer\\")
     p = None
     try:
         result = session.add(person)
