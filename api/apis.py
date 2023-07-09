@@ -1,6 +1,7 @@
 from flask import Flask, Blueprint, request, make_response, jsonify, session
 from flask import request
 import datetime
+from datetime import timedelta
 import jwt
 from model.userService import *
 from model.elderly_info import *
@@ -13,7 +14,7 @@ index_page = Blueprint("index_page", __name__)
 # 生成访问令牌
 def generate_access_token(username):
     # 设置访问令牌的有效期
-    expiry_time = datetime.datetime.utcnow() + datetime.timedelta(hours=1)
+    expiry_time = datetime.utcnow() + timedelta(hours=1)
     # 构建访问令牌的载荷
     payload = {
         'username': username,
@@ -37,7 +38,7 @@ def admin_login():
         # 生成访问令牌
         access_token = generate_access_token(username)
         # 返回响应
-        session['username'] = username
+        # session['username'] = username
         # 构造响应数据
         response = {
             'status': 'success',
@@ -136,7 +137,7 @@ def delete_user(userid):
             return jsonify({'msg': '删除成功'})
         return jsonify({'error': '删除失败'}), 410
     else:
-        return jsonify({'error': '未找到该老人信息'}), 404
+        return jsonify({'error': '未找到管理员信息'}), 404
 
 
 
@@ -428,7 +429,7 @@ def delete_volunt(volunteer_id):
     return jsonify({'error': '未找到该义工信息'}), 404
 
 
-@index_page.route('/volunteer/<int:volunteer_id>', methods=['PUT'])
+@index_page.route('/volunteer_update/<int:volunteer_id>', methods=['POST'])
 def update_volunteer(volunteer_id):
     data = request.get_json()
     volunteer = get_volunteer_info_by_id(volunteer_id)
