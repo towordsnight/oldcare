@@ -72,12 +72,14 @@ def get_sys_user_count_by_gender(sex):
     return result
 
 
-def get_sys_user_info_list(page, pagesize, name):
+def get_sys_user_info_list(name):
     session = Session()
     try:
-        result = session.query(User).filter(or_(User.username.like("%" + name + "%"),
-                                                User.realname.like("%" + name + "%"))).limit(pagesize).offset(
-            (page - 1) * pagesize).all()
+        if name == None:
+            result = session.query(User).filter().all()
+        else:
+            result = session.query(User).filter(or_(User.username.like("%" + name + "%"),
+                                                    User.realname.like("%" + name + "%"))).all()
     except Exception as e:
         logging.error(e)
         return None
@@ -145,7 +147,7 @@ def update_sys_user_password_by_id(id, old_password, new_password):
     return 0
 
 
-def delete_old_person_info_by_id(id):
+def delete_sys_info_by_id(id):
     session = Session()
     try:
         session.query(User).filter(User.userID == id).delete()

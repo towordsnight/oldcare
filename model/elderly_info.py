@@ -4,7 +4,7 @@ from entity.Elderly import Elderly as OldPersonInfo
 from config import sqlInit
 from sqlalchemy.orm import sessionmaker
 import logging
-
+from datetime import datetime
 Session = sessionmaker(bind=sqlInit.db)
 
 
@@ -181,51 +181,53 @@ def update_oldperson_info_by_id(ID, username, age, gender, phone, id_card, birth
                                 secondguardian_name, secondguardian_relationship, secondguardian_phone,
                                 health_state, DESCRIPTION, CREATEBY):
     session = Session()
-
+    dateFormatter = '%Y-%m-%d'
     person = OldPersonInfo()
-
     if username is not None:
         person.elderlyName = username
     if age is not None:
-        person.age = username
+        person.age = age
     if gender is not None:
-        person.gender = username
+        person.gender = gender
     if phone is not None:
-        person.phone = username
+        person.phone = phone
     if id_card is not None:
-        person.id_card = username
+        person.id_card = id_card
     if birthday is not None:
-        person.birthday = username
+        datetime.strptime(birthday, dateFormatter)
+        person.birthday = birthday
     if checkin_date is not None:
-        person.checkin_date = username
+        datetime.strptime(checkin_date, dateFormatter)
+        person.checkin_date = checkin_date
     if checkout_date is not None:
-        person.checkout_date = username
+        datetime.strptime(checkout_date, dateFormatter)
+        person.checkout_date = checkout_date
     if address is not None:
-        person.address = username
+        person.address = address
     if imgset_dir is not None:
-        person.imgset_dir = username
+        person.imgset_dir = imgset_dir
     if profile_photo is not None:
-        person.profile_photo = username
+        person.profile_photo = profile_photo
     if room_number is not None:
-        person.room_number = username
+        person.room_number = room_number
     if firstguardian_name is not None:
-        person.firstguardian_name = username
+        person.first_guardian_name = firstguardian_name
     if firstguardian_relationship is not None:
-        person.firstguardian_relationship = username
+        person.first_guardian_relationship = firstguardian_relationship
     if firstguardian_phone is not None:
-        person.firstguardian_phone = username
+        person.first_guardian_phone = firstguardian_phone
     if secondguardian_name is not None:
-        person.secondguardian_name = username
+        person.second_guardian_name = secondguardian_name
     if secondguardian_relationship is not None:
-        person.secondguardian_relationship = username
+        person.second_guardian_relationship = secondguardian_relationship
     if secondguardian_phone is not None:
-        person.secondguardian_phone = username
+        person.second_guardian_phone = secondguardian_phone
     if health_state is not None:
-        person.health_state = username
+        person.health_state = health_state
     if DESCRIPTION is not None:
-        person.description = username
+        person.description = DESCRIPTION
     if CREATEBY is not None:
-        person.createby = username
+        person.createby = CREATEBY
     person.created = time.localtime()
     try:
         u = person.__dict__
@@ -254,4 +256,8 @@ def delete_old_person_info_by_id(id):
 
 
 if __name__ == '__main__':
-    add_old_person_info("iaven",48,"xj","456","None",time.localtime(),time.localtime(),time.localtime(),None,None,None,"None","None","None","None","None","None","None",None,None,None)
+    # add_old_person_info("iaven",48,"xj","456","None",time.localtime(),time.localtime(),time.localtime(),None,None,None,"None","None","None","None","None","None","None",None,None,None)
+    GMT_FORMAT = '%Y-%m-%d'
+    TIME = '2018-05-08'
+    datetime.strptime(TIME, GMT_FORMAT)
+    print(TIME)

@@ -1,5 +1,5 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String,DateTime,CHAR
+from sqlalchemy import Column, Integer, String,Date,CHAR
 
 
 
@@ -13,9 +13,9 @@ class Elderly(Base):
     age = Column(Integer, nullable=False)
     gender = Column(String(20), nullable=False)
     id_card = Column(String(20), nullable=False)
-    birthday = Column(DateTime)
-    checkin_date = Column(DateTime)
-    checkout_date = Column(DateTime)
+    birthday = Column(Date)
+    checkin_date = Column(Date)
+    checkout_date = Column(Date)
     address = Column(String(20))
     phone = Column(String(20))
     imgset_dir = Column(String(200))
@@ -29,7 +29,7 @@ class Elderly(Base):
     second_guardian_phone = Column(String(20))
     health_state = Column(String(20))
     description = Column(String(50))
-    created = Column(DateTime)
+    created = Column(Date)
     createby = Column(String(20))
     __table_args__ = {
         "mysql_charset": "utf8"
