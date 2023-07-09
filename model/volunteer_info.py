@@ -29,6 +29,15 @@ def get_volunteer_info_by_idcard(idcard):
     session.close()
     return result
 
+def get_volunteer_info_all():
+    session = Session()
+    try:
+        result = session.query(VolunteerInfo).filter().all()
+    except Exception as e:
+        logging.error(e)
+        return None
+    session.close()
+    return result
 
 def get_volunteer_info_by_name(name):
     session = Session()
@@ -47,8 +56,7 @@ def get_volunterr_info_list(page, pagesize, username):
         if username == None:
             result = session.query(VolunteerInfo).filter().limit(pagesize).offset((page - 1) * pagesize).all()
         else:
-            result = session.query(VolunteerInfo).filter(VolunteerInfo.volunteerName.like("%" + username + "%"),
-                                                         VolunteerInfo.REMOVE == 0).limit(pagesize).offset(
+            result = session.query(VolunteerInfo).filter(VolunteerInfo.volunteerName.like("%" + username + "%")).limit(pagesize).offset(
                 (page - 1) * pagesize).all()
     except Exception as e:
         logging.error(e)

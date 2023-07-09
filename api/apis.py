@@ -95,7 +95,7 @@ def admin_login():
             'status': 'error',
             'message': 'Invalid username or password'
         }
-        return jsonify(response), 401
+        return jsonify(response), 200
 
 
 @index_page.route('/admin/register', methods=['POST'])
@@ -135,7 +135,7 @@ def admin_register():
 
 
 @index_page.route('/elderly', methods=['GET'])
-def get_elderly_list():
+def get_elderly_byname():
     data = request.get_json()
     #根据elderlyName查询数据库中对应的所有信息
     elderly = get_old_person_info_by_name(data.get('elderlyName'))
@@ -181,6 +181,12 @@ def get_elderly_list():
             }
         }
         return jsonify(response), 200
+
+@index_page.route('/all_elderly', methods=['GET'])
+def get_elderly_list():
+    return get_old_person_infoall()
+
+
 
 # 用列表存储老人信息
 elderly_list = []
@@ -317,6 +323,11 @@ def get_volunteer():
             }
         }
         return jsonify(response), 200
+
+@index_page.route('/all_volunteer', methods=['GET'])
+def get_allvol():
+    return get_volunteer_info_all()
+
 
 @index_page.route('/volunteer/<int:volunteer_id>', methods=['DELETE'])
 def delete_volunt(volunteer_id):

@@ -39,6 +39,16 @@ def get_old_person_info_by_name(username):
     session.close()
     return result
 
+def get_old_person_infoall():
+    session = Session()
+    try:
+        result = session.query(OldPersonInfo).filter().all()
+    except Exception as e:
+        logging.error(e)
+        return None
+    session.close()
+    return result
+
 
 def get_old_person_info_list(page, pagesize, username):
     session = Session()
