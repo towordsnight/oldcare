@@ -129,7 +129,7 @@ def admin_update(userid):
 
 
 @index_page.route('/admin/<int:userid>', methods=['DELETE'])
-def delete_elderly(userid):
+def delete_user(userid):
     user = get_sys_user_by_id(userid)
     if user:
         if delete_sys_info_by_id(userid):
@@ -395,6 +395,7 @@ def get_vollike():
 
     for volunteer in vols:
         volunteer_info = {
+            'volunteerID': volunteer.volunteerID,
             'volunteerName': volunteer.volunteerName,
             'age': volunteer.age,
             'gender': volunteer.gender,
