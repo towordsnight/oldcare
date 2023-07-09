@@ -85,15 +85,16 @@ def admin_register():
 
     response = {
         'status': 'error',
-        'message': 'Username already exists'
+        'message': '注册失败'
     }
     return jsonify(response), 409
 
 
-@index_page.route('/admin/getlist_like', methods=['GET'])
+@index_page.route('/admin/getlist_like', methods=['POST'])
 def admin_listlike():
     user_list = []
-    users = get_sys_user_info_list(request.values.get("username"))
+    data = request.get_json()
+    users = get_sys_user_info_list(data.get("username"))
     # 如果没有找到对应的老人信息
     if users is None:
         response = {
@@ -418,7 +419,7 @@ def get_vollike():
     return response
 
 
-@index_page.route('/volunteer/<int:volunteer_id>', methods=['DELETE'])
+@index_page.route('/volunteer_delete/<int:volunteer_id>', methods=['DELETE'])
 def delete_volunt(volunteer_id):
     volunteer = get_volunteer_info_by_id(volunteer_id)
 
