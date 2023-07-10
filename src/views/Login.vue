@@ -55,6 +55,7 @@
 
 <script >
 import axios from 'axios';
+import { login_user } from "../utils/api";
 export default {
     data() {
         return {
@@ -62,10 +63,6 @@ export default {
                 username: "",
                 password: "",
             },
-            user_admin: {
-                name: "",
-                password: "",
-            }
         }
     },
     methods: {
@@ -73,7 +70,7 @@ export default {
             this.$router.push('/register');
         },
         login() {
-            this.$router.push('/home');
+
             if (this.user.username == "" || this.user.password == "") {
                 this.$message({
                     showClose: true,
@@ -81,36 +78,43 @@ export default {
                     type: 'error'
                 })
             } else {
-                // axios.post(`http://43.143.247.127:8088/user/login`,this.user)
-                // .then(res => {
+                //登录请求
+                axios.post(`http://127.0.0.1:5000/admin/login`,this.user).then(res => {
+                    console.log(res)
+                    if (res.data.status == "success") {
+                        // const token = res.data.access_token
+                        window.localStorage.clear('token');
+                        window.localStorage.setItem('token', this.user.username);
+                        this.$router.push('/camera');
+                        this.$router.push('/home');
+
+                    } else if (res.data.status == "error"){
+                        this.$message({
+                            showClose: true,
+                            message: '用户名或密码错误，登录失败',
+                            type: 'error'
+                        })
+                    }
+                }).catch(err => {
+                    console.log(err.response)
+                })
+                // login_user(this.user).then((res) => {
                 //     console.log(res)
-                //     if (res.data.code == 1 && res.data.data.permission == 1) {
-                //         this.$router.push('/homepage');
-                //         //弹出成功消息
-                //         this.$message({
-                //             showClose: true,
-                //             message: '用户登录成功',
-                //             type: 'success'
-                //         })
-                //         console.log(res)
-                //         const token = res.data.data.token
+                //     if (res.code == 200) {
+                //         const token = res.data.access_token
                 //         window.localStorage.clear('token');
                 //         window.localStorage.setItem('token', token);
-                //     }else if (res.data.code == 1 && res.data.data.permission == 2){
-                //         //弹出消息
+                //         this.$router.push('/home');
+                //     } else {
                 //         this.$message({
                 //             showClose: true,
-                //             message: '您输入的账号密码为管理员身份，请选择管理员登录按钮',
-                //             type: 'error'
-                //         })
-                //     } else if (res.data.code == 401){
-                //         this.$message({
-                //             showClose: true,
-                //             message: "用户名或密码错误",
+                //             message: '用户名或密码错误，登录失败',
                 //             type: 'error'
                 //         })
                 //     }
-                //     });
+                // }).catch(err => {
+                //     console.log(err.response)
+                // })
             }
 
         },
@@ -128,7 +132,7 @@ export default {
     background-size: cover;
 }
 
-.background{
+.background {
     background-image: url('../img/background.jpg');
     background-size: cover;
 }

@@ -39,7 +39,10 @@
             </el-aside>
             <el-container>
                 <el-main class="main">
-
+                    <img v-show="false" style="display: block;-webkit-user-select: none;margin: auto;" src="http://127.0.0.1:5000/cam/video_feed"
+                height="500" width="900">
+                <img v-show="false" style="display: block;-webkit-user-select: none;margin: auto;" src="http://127.0.0.1:5000/cam/video_feed_2"
+                height="500" width="900">
                     <router-view />
 
                 </el-main>

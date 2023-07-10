@@ -15,9 +15,9 @@
                     37.546667-3.413333 47.786667s-37.546667 10.24-47.786667-3.413333l-64.853333-78.506667z"
                         fill="#515151" p-id="21859"></path>
                 </svg>
-                <input class="searchinput" />
+                <input class="searchinput" v-model="searchData.username" />
             </div>
-            <button class="searchAdminBtn">搜索</button>
+            <button class="searchAdminBtn" @click="searchAdmin">搜索</button>
         </div>
         <!-- </div> -->
 
@@ -43,18 +43,21 @@
         </div>
     </div>
 
-     <!-- 添加信息弹出框 -->
-     <div>
-        <el-dialog v-model="addAdminVisible" title="修改信息" style="width:550px;">
-                <div style="margin-left:30px;width:450px;height:210px;">
+    <!-- 添加信息弹出框 -->
+    <div>
+        <el-dialog v-model="addAdminVisible" title="添加信息" style="width:535px;">
+            <div style="margin-left:30px;width:450px;height:270px;">
                 <el-form-item label="姓名：" style="margin-left: 32px;">
-                    <el-input v-model="addData.name" style="width:300px" placeholder="请输入姓名" />
+                    <el-input v-model="addData.username" style="width:300px" placeholder="请输入姓名" />
                 </el-form-item>
                 <el-form-item label="真实姓名：" style="margin-left: 32px;">
-                    <el-input v-model="addData.real_name" style="width:300px" placeholder="请输入真实姓名" />
+                    <el-input v-model="addData.realname" style="width:272px" placeholder="请输入真实姓名" />
+                </el-form-item>
+                <el-form-item label="密码：" style="margin-left: 32px;">
+                    <el-input v-model="addData.password" style="width:300px" placeholder="请输入密码" />
                 </el-form-item>
                 <el-form-item label="性别：" style="margin-left: 32px;">
-                    <el-radio-group v-model="addData.genre">
+                    <el-radio-group v-model="addData.sex">
                         <el-radio label="女" size="large">女</el-radio>
                         <el-radio label="男" size="large">男</el-radio>
                     </el-radio-group>
@@ -65,9 +68,9 @@
                 <el-form-item label="电话：" style="margin-left: 32px;">
                     <el-input v-model="addData.phone" style="width:300px" placeholder="请输入电话" />
                 </el-form-item>
-                
-                </div>
-            
+
+            </div>
+
             <template #footer>
                 <span class="dialog-footer">
                     <el-button @click="addAdminVisible = false">取消</el-button>
@@ -83,17 +86,17 @@
     <!-- 工作人员数据表格 -->
     <div>
         <el-table :data="tableData" style="width: 100%">
-            <el-table-column fixed prop="oldno" label="序号" width="70" />
-            <el-table-column fixed prop="name" label="姓名" width="120" />
-            <el-table-column prop="real_name" label="用户真实姓名" width="120" />
+            <el-table-column fixed prop="userID" label="序号" width="70" />
+            <el-table-column fixed prop="username" label="姓名" width="120" />
+            <el-table-column prop="realname" label="用户真实姓名" width="120" />
             <el-table-column prop="sex" label="性别" width="120" />
             <el-table-column prop="email" label="邮箱" width="100" />
             <el-table-column prop="phone" label="电话" width="150" />
             <el-table-column fixed="right" label="操作" width="250">
-                <template #default>
+                <template #default="scope">
                     <!-- <el-button link type="primary" size="small" @click="handleClick">详情</el-button> -->
-                    <el-button link type="primary" size="small" @click="modifyAdminBtn">修改</el-button>
-                    <el-button link type="primary" size="small" @click="deleteAdmin">删除</el-button>
+                    <el-button link type="primary" size="small" @click="modifyAdminBtn(scope.row)">修改</el-button>
+                    <el-button link type="primary" size="small" @click="deleteAdmin(scope.row)">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -101,16 +104,19 @@
 
     <!-- 修改信息弹出框 -->
     <div>
-        <el-dialog v-model="modifyAdminVisible" title="修改信息" style="width:550px;">
-                <div style="margin-left:30px;width:450px;height:210px;">
+        <el-dialog v-model="modifyAdminVisible" title="修改信息" style="width:535px;">
+            <div style="margin-left:30px;width:450px;height:210px;">
                 <el-form-item label="姓名：" style="margin-left: 32px;">
-                    <el-input v-model="modifyData.name" style="width:300px" placeholder="请输入姓名" />
+                    <el-input v-model="modifyData.username" style="width:300px" placeholder="请输入姓名" />
                 </el-form-item>
                 <el-form-item label="真实姓名：" style="margin-left: 32px;">
-                    <el-input v-model="modifyData.real_name" style="width:300px" placeholder="请输入真实姓名" />
+                    <el-input v-model="modifyData.realname" style="width:272px" placeholder="请输入真实姓名" />
+                </el-form-item>
+                \<el-form-item label="密码：" style="margin-left: 32px;">
+                    <el-input v-model="modifyData.password" style="width:300px" placeholder="请输入密码" />
                 </el-form-item>
                 <el-form-item label="性别：" style="margin-left: 32px;">
-                    <el-radio-group v-model="modifyData.genre">
+                    <el-radio-group v-model="modifyData.sex">
                         <el-radio label="女" size="large">女</el-radio>
                         <el-radio label="男" size="large">男</el-radio>
                     </el-radio-group>
@@ -121,9 +127,9 @@
                 <el-form-item label="电话：" style="margin-left: 32px;">
                     <el-input v-model="modifyData.phone" style="width:300px" placeholder="请输入电话" />
                 </el-form-item>
-                
-                </div>
-            
+
+            </div>
+
             <template #footer>
                 <span class="dialog-footer">
                     <el-button @click="modifyAdminVisible = false">取消</el-button>
@@ -137,74 +143,183 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
     data() {
         return {
+            searchData: { username: "" },
             addAdminVisible: false,
-            addData:{},
+            addData: {},
             modifyAdminVisible: false,
-            tableData: [
-                {
-                    date: '2016-05-03',
-                    name: 'Tom',
-                    state: 'California',
-                    city: 'Los Angeles',
-                    address: 'No. 189, Grove St, Los Angeles',
-                    zip: 'CA 90036',
-                    tag: 'Home',
-                },
-                {
-                    date: '2016-05-02',
-                    name: 'Tom',
-                    state: 'California',
-                    city: 'Los Angeles',
-                    address: 'No. 189, Grove St, Los Angeles',
-                    zip: 'CA 90036',
-                    tag: 'Office',
-                },
-                {
-                    date: '2016-05-04',
-                    name: 'Tom',
-                    state: 'California',
-                    city: 'Los Angeles',
-                    address: 'No. 189, Grove St, Los Angeles',
-                    zip: 'CA 90036',
-                    tag: 'Home',
-                },
-                {
-                    date: '2016-05-01',
-                    name: 'Tom',
-                    state: 'California',
-                    city: 'Los Angeles',
-                    address: 'No. 189, Grove St, Los Angeles',
-                    zip: 'CA 90036',
-                    tag: 'Office',
-                },
-            ],
-            modifyData:{
-                name:null,
-            }
+            tableData: [],
+            modifyData: {}
         }
     },
+    created() {
+        //获取工作人员列表请求
+        axios.post(`http://127.0.0.1:5000/admin/getlist_like`, { adminName: null }).then(res => {
+            console.log(res)
+            this.tableData = res.data.data;
+        }).catch(err => {
+            console.log(err.response)
+        })
+    },
     methods: {
+        //搜索义工
+        searchAdmin() {
+            if (this.searchData.username == "") {
+                this.$message({
+                    showClose: true,
+                    message: "搜索内容为空",
+                    type: 'error'
+                })
+            } else {
+                //搜索义工请求
+                const config = {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                };
+
+                axios.post(`http://127.0.0.1:5000/admin/getlist_like`, this.searchData).then(res => {
+                    console.log(res)
+                    if (res.data.status == "success") {
+                        this.tableData = res.data.data;
+                    } else {
+                        this.$message({
+                            showClose: true,
+                            message: "搜索结果为空",
+                            type: 'error'
+                        })
+                        this.tableData = [];
+                    }
+                }).catch(err => {
+                    console.log(err.response)
+                })
+            }
+
+        },
         //添加按钮
         addAdminBtn() {
             this.addAdminVisible = true;
         },
         //弹出框中的添加按钮
         addAdmin() {
-            this.addAdminVisible = false;
+            if (this.addData.username == null || this.addData.username == "") {
+                this.$message({
+                    showClose: true,
+                    message: "姓名为空",
+                    type: 'error'
+                })
+            } else if (this.addData.password == null || this.addData.password == "") {
+                this.$message({
+                    showClose: true,
+                    message: "密码为空",
+                    type: 'error'
+                })
+            } else {
+                this.addAdminVisible = false;
+                //注册请求
+                axios.post(`http://127.0.0.1:5000/admin/register`, this.addData).then(res => {
+                    console.log(res);
+                    if (res.data.status == "success") {
+                        //弹出成功消息
+                        this.$message({
+                            showClose: true,
+                            message: '用户添加成功',
+                            type: 'success'
+                        })
+                        //获取工作人员列表请求
+                        axios.post(`http://127.0.0.1:5000/admin/getlist_like`, { adminName: null }).then(res => {
+                            console.log(res)
+                            this.tableData = res.data.data;
+                        }).catch(err => {
+                            console.log(err.response)
+                        })
+                    } else if (res.data.status == "error") {
+                        this.$message({
+                            showClose: true,
+                            message: "错误",
+                            type: 'error'
+                        })
+                    }
+                }).catch(err => {
+                    console.log(err.response)
+                })
+            }
+
         },
         //表格中修改按钮
-        modifyAdminBtn() {
+        modifyAdminBtn(row) {
+            console.log(row)
+            this.modifyData = row;
             this.modifyAdminVisible = true;
+
         },
         //弹出框中的修改按钮
         modifyAdmin() {
             this.modifyAdminVisible = false;
-        },
-        deleteAdmin() {
+            //修改工作人员请求
+            const config = {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            };
+            axios.post(`http://127.0.0.1:5000/admin/update/${this.modifyData.userID}`, JSON.stringify(this.modifyData), config).then(res => {
+                console.log(res)
+                if (res.data.msg == "更新成功") {
+                    this.$message({
+                        showClose: true,
+                        message: "修改成功",
+                        type: 'success'
+                    })
+                    //获取工作人员列表请求
+                    axios.post(`http://127.0.0.1:5000/admin/getlist_like`, { adminName: null }).then(res => {
+                        console.log(res)
+                        this.tableData = res.data.data;
+                    }).catch(err => {
+                        console.log(err.response)
+                    })
+                } else {
+                    this.$message({
+                        showClose: true,
+                        message: "修改失败",
+                        type: 'error'
+                    })
+                }
 
+            }).catch(err => {
+                console.log(err.response)
+            })
+        },
+        deleteAdmin(row) {
+            //删除义工请求
+            axios.delete(`http://127.0.0.1:5000/admin/${row.userID}`).then(res => {
+                console.log(res)
+                if (res.data.msg == "删除成功") {
+                    this.$message({
+                        showClose: true,
+                        message: "删除成功",
+                        type: 'success'
+                    })
+                    //获取工作人员列表请求
+                    axios.post(`http://127.0.0.1:5000/admin/getlist_like`, { adminName: null }).then(res => {
+                        console.log(res)
+                        this.tableData = res.data.data;
+                    }).catch(err => {
+                        console.log(err.response)
+                    })
+                } else {
+                    this.$message({
+                        showClose: true,
+                        message: "删除失败",
+                        type: 'error'
+                    })
+                }
+
+            }).catch(err => {
+                console.log(err.response)
+            })
         }
     }
 }

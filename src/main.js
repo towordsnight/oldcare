@@ -16,7 +16,9 @@ const app = createApp(App)
 app.use(router)
 
 app.use(ElementPlus)
+
 app.mount('#app')
+
 // axios.defaults.baseURL = '/api'
 
 //  统一注册el-icon图标

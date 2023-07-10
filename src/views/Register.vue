@@ -19,6 +19,19 @@
                     </div>
                     <br>
                     <div class="register_box">
+                        <svg t="1680521604004" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                            width="25px" height="25px">
+                            <path d="M725.333333 721.066667l-38.4-38.4H379.733333l-38.4 
+                                    38.4V768h384v-46.933333z m85.333334-38.4v170.666666H256v-170.666666h4.266667l85.333333-85.333334h375.466667l89.6 
+                                    85.333334z m-85.333334-320c0 106.666667-85.333333 192-192 192S341.333333 469.333333 341.333333 362.666667 426.666667 
+                                    170.666667 533.333333 170.666667 725.333333 256 725.333333 362.666667z m-85.333333 0C640 302.933333 593.066667 256 
+                                    533.333333 256S426.666667 302.933333 426.666667 362.666667s46.933333 106.666667 106.666666 106.666666S640 422.4 640 
+                                    362.666667z" fill="#444444"></path>
+                        </svg>
+                        <input class="inp" id="real_user" v-model="registerData.realname" placeholder="真实姓名">
+                    </div>
+                    <br>
+                    <div class="register_box">
                         <svg t="1680522311002" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
                             width="25px" height="25px">
                             <path
@@ -94,7 +107,7 @@
 
                 <!-- 右侧的注册盒子 -->
                 <div class="background">
-                    <div class="title" >智能看护系统</div>
+                    <div class="title">智能看护系统</div>
                 </div>
 
             </div>
@@ -104,6 +117,7 @@
 
 <script >
 import axios from 'axios';
+import { register_user } from '../utils/api'
 export default {
     data() {
         return {
@@ -111,7 +125,8 @@ export default {
             registerData: {
                 username: "",
                 password: "",
-                gender: "",
+                realname:"",
+                sex: "",
                 repwd: "",
                 phone: "",
                 email: "",
@@ -120,42 +135,91 @@ export default {
     },
     methods: {
         register() {
-            // if (this.gender_choose == 1) {
-            //     this.registerData.gender = "女";
-            // } else if (this.gender_choose == 2) {
-            //     this.registerData.gender = "男";
-            // }
+            if (this.gender_choose == 1) {
+                this.registerData.sex = "女";
+            } else if (this.gender_choose == 2) {
+                this.registerData.sex = "男";
+            }
 
-            // if (this.registerData.username == "") {
-            //     this.$message({
-            //         showClose: true,
-            //         message: "用户名为空",
-            //         type: 'error'
-            //     })
-            // } else if (this.registerData.password == "" || this.registerData.repwd == "") {
-            //     this.$message({
-            //         showClose: true,
-            //         message: "密码或确认密码为空",
-            //         type: 'error'
-            //     })
-            // } else if (this.registerData.phone == "") {
-            //     this.$message({
-            //         showClose: true,
-            //         message: "手机号为空",
-            //         type: 'error'
-            //     })
-            // } else if (this.registerData.email == "") {
-            //     this.$message({
-            //         showClose: true,
-            //         message: "邮箱为空",
-            //         type: 'error'
-            //     })
-            // } else if (this.registerData.password != this.registerData.repwd) {
-            //     this.$message({
-            //         showClose: true,
-            //         message: "输入的两次密码不一致",
-            //         type: 'error'
-            //     })
+            if (this.registerData.username == "") {
+                this.$message({
+                    showClose: true,
+                    message: "用户名为空",
+                    type: 'error'
+                })
+            }else if (this.registerData.realname == "") {
+                this.$message({
+                    showClose: true,
+                    message: "真实姓名为空",
+                    type: 'error'
+                })
+            } else if (this.registerData.password == "" || this.registerData.repwd == "") {
+                this.$message({
+                    showClose: true,
+                    message: "密码或确认密码为空",
+                    type: 'error'
+                })
+            } else if (this.registerData.phone == "") {
+                this.$message({
+                    showClose: true,
+                    message: "手机号为空",
+                    type: 'error'
+                })
+            } else if (this.registerData.email == "") {
+                this.$message({
+                    showClose: true,
+                    message: "邮箱为空",
+                    type: 'error'
+                })
+            } else if (this.registerData.password != this.registerData.repwd) {
+                this.$message({
+                    showClose: true,
+                    message: "输入的两次密码不一致",
+                    type: 'error'
+                })
+            } else {
+                //注册请求
+                axios.post(`http://127.0.0.1:5000/admin/register`,this.registerData).then(res => {
+                    console.log(res);
+                    if (res.data.status == "success") {
+                        this.$router.push('/');
+                        //弹出成功消息
+                        this.$message({
+                            showClose: true,
+                            message: '用户注册成功',
+                            type: 'success'
+                        })
+                    } else if(res.data.status == "error") {
+                        this.$message({
+                            showClose: true,
+                            message: "错误",
+                            type: 'error'
+                        })
+                    }
+                }).catch(err => {
+                    console.log(err.response)
+                })
+                // register_user(this.registerData).then(res => {
+                //     console.log(res);
+                //     if (res.code == 201) {
+                //         this.$router.push('/');
+                //         //弹出成功消息
+                //         this.$message({
+                //             showClose: true,
+                //             message: '用户注册成功',
+                //             type: 'success'
+                //         })
+                //     } else {
+                //         this.$message({
+                //             showClose: true,
+                //             message: "错误",
+                //             type: 'error'
+                //         })
+                //     }
+                // }).catch(err => {
+                //     console.log(err.response)
+                // })
+            }
             // } else {
             //     axios.post(`http://43.143.247.127:8088/user/register`,this.registerData).then(res => {
             //         console.log(res);
@@ -214,7 +278,7 @@ export default {
     background-size: cover;
 }
 
-.background{
+.background {
     background-image: url('../img/background.jpg');
     background-size: cover;
 }
@@ -239,7 +303,7 @@ export default {
 }
 
 .register_userbox {
-    margin-top: 30px;
+    margin-top: 25px;
     height: 25px;
     width: 230px;
     display: flex;

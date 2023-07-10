@@ -15,9 +15,9 @@
                     37.546667-3.413333 47.786667s-37.546667 10.24-47.786667-3.413333l-64.853333-78.506667z"
                         fill="#515151" p-id="21859"></path>
                 </svg>
-                <input class="searchinput" />
+                <input class="searchinput" v-model="searchData.volunteerName" />
             </div>
-            <button class="searchVolunteerBtn">搜索</button>
+            <button class="searchVolunteerBtn" @click="searchVolunteer">搜索</button>
         </div>
         <!-- </div> -->
 
@@ -43,43 +43,47 @@
         </div>
     </div>
 
-     <!-- 添加信息弹出框 -->
-     <div>
-        <el-dialog v-model="addVolunteerVisible" title="修改信息" style="width:1050px;">
+    <!-- 添加信息弹出框 -->
+    <div>
+        <el-dialog v-model="addVolunteerVisible" title="修改信息" style="width:985px;">
             <div style="display: flex;flex-direction: row;">
                 <div style="margin-left:30px;width:450px;height:210px;">
-                <el-form-item label="姓名：" style="margin-left: 32px;">
-                    <el-input v-model="addData.name" style="width:300px" placeholder="请输入姓名" />
-                </el-form-item>
-                <el-form-item label="性别：" style="margin-left: 32px;">
-                    <el-radio-group v-model="addData.genre">
-                        <el-radio label="女" size="large">女</el-radio>
-                        <el-radio label="男" size="large">男</el-radio>
-                    </el-radio-group>
-                </el-form-item>
-                <el-form-item label="电话：" style="margin-left: 32px;">
-                    <el-input v-model="addData.phone" style="width:300px" placeholder="请输入电话" />
-                </el-form-item>
-                <el-form-item label="身份证号：" style="margin-left: 32px;">
-                    <el-input v-model="addData.id_card" style="width:300px" placeholder="请输入身份证号" />
-                </el-form-item>
-                
+                    <el-form-item label="姓名：" style="margin-left: 32px;">
+                        <el-input v-model="addData.volunteerName" style="width:300px" placeholder="请输入姓名" />
+                    </el-form-item>
+                    <el-form-item label="性别：" style="margin-left: 32px;">
+                        <el-radio-group v-model="addData.gender">
+                            <el-radio label="女" size="large">女</el-radio>
+                            <el-radio label="男" size="large">男</el-radio>
+                        </el-radio-group>
+                    </el-form-item>
+                    <el-form-item label="电话：" style="margin-left: 32px;">
+                        <el-input v-model="addData.phone" style="width:300px" placeholder="请输入电话" />
+                    </el-form-item>
+                    <el-form-item label="身份证号：" style="margin-left: 32px;">
+                        <el-input v-model="addData.id_card" style="width:272px" placeholder="请输入身份证号" />
+                    </el-form-item>
+
                 </div>
 
                 <div style="margin-left:30px;width:450px;height:210px;">
                     <el-form-item label="访问日期：" style="margin-left: 32px;">
-                    <el-input v-model="addData.checkin_date" style="width:300px" placeholder="请输入访问日期" />
-                </el-form-item>
-                <el-form-item label="离开日期：" style="margin-left: 32px;">
-                    <el-input v-model="addData.checkout_date" style="width:300px" placeholder="请输入离开日期" />
-                </el-form-item>
+                        <el-date-picker v-model="addData.checkin_date" type="date" format="YYYY-MM-DD"
+                            value-format="YYYY-MM-DD" placeholder="请选择访问日期" style="width:272px" />
+                        <!-- <el-input v-model="addData.checkin_date" style="width:300px" placeholder="请输入访问日期" /> -->
+                    </el-form-item>
+                    <el-form-item label="离开日期：" style="margin-left: 32px;">
+                        <el-date-picker v-model="addData.checkout_date" type="date" format="YYYY-MM-DD"
+                            value-format="YYYY-MM-DD" placeholder="请选择离开日期" style="width:272px" />
+                        <!-- <el-input v-model="addData.checkout_date" style="width:300px" placeholder="请输入离开日期" /> -->
+                    </el-form-item>
                     <el-form-item label="描述：" style="margin-left: 32px;">
-                    <el-input v-model="addData.description" style="width:300px;" type="textarea" clearable
-                        :autosize="{ minRows: 5, maxRows: 10 }" maxlength="1000" placeholder="请输入描述" />
-                </el-form-item>
+                        <el-input v-model="addData.description" style="width:300px;" type="textarea" clearable
+                            :autosize="{ minRows: 4, maxRows: 10 }" maxlength="1000" placeholder="请输入描述" />
+                    </el-form-item>
+                </div>
             </div>
-            </div>
-            
+
             <template #footer>
                 <span class="dialog-footer">
                     <el-button @click="addVolunteerVisible = false">取消</el-button>
@@ -103,7 +107,7 @@
                                 props.row.description }}</span>
                         </div>
                         <div style="margin-top: 5px;">
-                            <span style="display: inline-block;width: 240px;font-size: 16px;">创建时间：{{
+                            <span style="display: inline-block;width: 440px;font-size: 16px;">创建时间：{{
                                 props.row.created }}</span>
                             <span style="display: inline-block;width: 240px;font-size: 16px;">创建人：{{
                                 props.row.createdby }}</span>
@@ -112,18 +116,19 @@
                 </template>
 
             </el-table-column>
-            <el-table-column fixed prop="oldno" label="序号" width="70" />
-            <el-table-column fixed prop="name" label="姓名" width="120" />
+            <el-table-column fixed prop="volunteerID" label="序号" width="70" />
+            <el-table-column fixed prop="volunteerName" label="姓名" width="120" />
             <el-table-column prop="gender" label="性别" width="70" />
             <el-table-column prop="phone" label="电话" width="120" />
             <el-table-column prop="id_card" label="身份证号" width="100" />
             <el-table-column prop="checkin_date" label="访问日期" width="150" />
             <el-table-column prop="checkout_date" label="离开日期" width="150" />
             <el-table-column fixed="right" label="操作" width="250">
-                <template #default>
+                <template #default="scope">
                     <!-- <el-button link type="primary" size="small" @click="handleClick">详情</el-button> -->
-                    <el-button link type="primary" size="small" @click="modifyVolunteerBtn">修改</el-button>
-                    <el-button link type="primary" size="small" @click="deleteVolunteer">删除</el-button>
+                    <el-button link type="primary" size="small" @click="modifyVolunteerBtn(scope.row)">修改</el-button>
+                    <el-button link type="primary" size="small" @click="deleteVolunteer(scope.row)">删除</el-button>
+                    <el-button link type="primary" size="small" @click="addVolunteerPicBtn(scope.row)">添加照片</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -131,41 +136,43 @@
 
     <!-- 修改信息弹出框 -->
     <div>
-        <el-dialog v-model="modifyVolunteerVisible" title="修改信息" style="width:1050px;">
+        <el-dialog v-model="modifyVolunteerVisible" title="修改信息" style="width:985px;">
             <div style="display: flex;flex-direction: row;">
                 <div style="margin-left:30px;width:450px;height:210px;">
-                <el-form-item label="姓名：" style="margin-left: 32px;">
-                    <el-input v-model="modifyData.name" style="width:300px" placeholder="请输入姓名" />
-                </el-form-item>
-                <el-form-item label="性别：" style="margin-left: 32px;">
-                    <el-radio-group v-model="modifyData.genre">
-                        <el-radio label="女" size="large">女</el-radio>
-                        <el-radio label="男" size="large">男</el-radio>
-                    </el-radio-group>
-                </el-form-item>
-                <el-form-item label="电话：" style="margin-left: 32px;">
-                    <el-input v-model="modifyData.phone" style="width:300px" placeholder="请输入电话" />
-                </el-form-item>
-                <el-form-item label="身份证号：" style="margin-left: 32px;">
-                    <el-input v-model="modifyData.id_card" style="width:300px" placeholder="请输入身份证号" />
-                </el-form-item>
-                
+                    <el-form-item label="姓名：" style="margin-left: 32px;">
+                        <el-input v-model="modifyData.volunteerName" style="width:300px" placeholder="请输入姓名" />
+                    </el-form-item>
+                    <el-form-item label="性别：" style="margin-left: 32px;">
+                        <el-radio-group v-model="modifyData.genre">
+                            <el-radio label="女" size="large">女</el-radio>
+                            <el-radio label="男" size="large">男</el-radio>
+                        </el-radio-group>
+                    </el-form-item>
+                    <el-form-item label="电话：" style="margin-left: 32px;">
+                        <el-input v-model="modifyData.phone" style="width:300px" placeholder="请输入电话" />
+                    </el-form-item>
+                    <el-form-item label="身份证号：" style="margin-left: 32px;">
+                        <el-input v-model="modifyData.id_card" style="width:272px" placeholder="请输入身份证号" />
+                    </el-form-item>
+
                 </div>
 
                 <div style="margin-left:30px;width:450px;height:210px;">
                     <el-form-item label="访问日期：" style="margin-left: 32px;">
-                    <el-input v-model="modifyData.checkin_date" style="width:300px" placeholder="请输入访问日期" />
-                </el-form-item>
-                <el-form-item label="离开日期：" style="margin-left: 32px;">
-                    <el-input v-model="modifyData.checkout_date" style="width:300px" placeholder="请输入离开日期" />
-                </el-form-item>
+                        <el-date-picker v-model="modifyData.checkin_date" type="date" format="YYYY-MM-DD"
+                            value-format="YYYY-MM-DD" placeholder="请选择访问日期" style="width:272px" />
+                    </el-form-item>
+                    <el-form-item label="离开日期：" style="margin-left: 32px;">
+                        <el-date-picker v-model="modifyData.checkout_date" type="date" format="YYYY-MM-DD"
+                            value-format="YYYY-MM-DD" placeholder="请选择离开日期" style="width:272px" />
+                    </el-form-item>
                     <el-form-item label="描述：" style="margin-left: 32px;">
-                    <el-input v-model="modifyData.description" style="width:300px;" type="textarea" clearable
-                        :autosize="{ minRows: 5, maxRows: 10 }" maxlength="1000" placeholder="请输入描述" />
-                </el-form-item>
+                        <el-input v-model="modifyData.description" style="width:300px;" type="textarea" clearable
+                            :autosize="{ minRows: 4, maxRows: 10 }" maxlength="1000" placeholder="请输入描述" />
+                    </el-form-item>
+                </div>
             </div>
-            </div>
-            
+
             <template #footer>
                 <span class="dialog-footer">
                     <el-button @click="modifyVolunteerVisible = false">取消</el-button>
@@ -176,77 +183,328 @@
             </template>
         </el-dialog>
     </div>
+
+    <!-- 添加照片弹出框 -->
+    <div>
+        <el-dialog v-model="addVolunteerPicVisible" title="添加照片" style="width:985px;">
+            <div style="display: flex;flex-direction: row;">
+                <div style="margin-left:30px;width:450px;height:210px;">
+                    <el-form-item label="人脸照片：">
+                        <el-upload ref="upload" class="upload-demo" :auto-upload="false" :on-change="loadPicFile" :limit="1"
+                            v-model="face_file" list-type="picture">
+                            <el-button size="small" type="primary">点击上传</el-button>
+                            <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过10Mb</div>
+                        </el-upload>
+                    </el-form-item>
+                </div>
+            </div>
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="addVolunteerPicVisible = false">取消</el-button>
+                    <el-button type="primary" @click="addVolunteerPic">
+                        确定
+                    </el-button>
+                </span>
+            </template>
+        </el-dialog>
+    </div>
 </template>
 
 <script>
+import axios from 'axios';
 export default {
     data() {
         return {
+            searchData: { volunteerName: "" },
             addVolunteerVisible: false,
-            addData:{},
+            addData: {},
             modifyVolunteerVisible: false,
-            tableData: [
-                {
-                    date: '2016-05-03',
-                    name: 'Tom',
-                    state: 'California',
-                    city: 'Los Angeles',
-                    address: 'No. 189, Grove St, Los Angeles',
-                    zip: 'CA 90036',
-                    tag: 'Home',
-                },
-                {
-                    date: '2016-05-02',
-                    name: 'Tom',
-                    state: 'California',
-                    city: 'Los Angeles',
-                    address: 'No. 189, Grove St, Los Angeles',
-                    zip: 'CA 90036',
-                    tag: 'Office',
-                },
-                {
-                    date: '2016-05-04',
-                    name: 'Tom',
-                    state: 'California',
-                    city: 'Los Angeles',
-                    address: 'No. 189, Grove St, Los Angeles',
-                    zip: 'CA 90036',
-                    tag: 'Home',
-                },
-                {
-                    date: '2016-05-01',
-                    name: 'Tom',
-                    state: 'California',
-                    city: 'Los Angeles',
-                    address: 'No. 189, Grove St, Los Angeles',
-                    zip: 'CA 90036',
-                    tag: 'Office',
-                },
-            ],
-            modifyData:{
-                name:null,
-            }
+            tableData: [],
+            modifyData: {},
+            face_file: [],
+            addVolunteerPicVisible: false,
+            id_card_pic: "",
         }
     },
+    created() {
+        //获取义工列表请求
+        axios.post(`http://127.0.0.1:5000/volunteerlike`, { volunteerName: null }).then(res => {
+            console.log(res)
+            this.tableData = res.data.data;
+            for (let i = 0; i < res.data.data.length; i++) {
+                if (res.data.data[i].checkin_date != null) {
+                    var date_in = new Date(res.data.data[i].checkin_date);
+                    var y = date_in.getFullYear()
+                    var m = (date_in.getMonth() + 1 < 10 ? '0' + (date_in.getMonth() + 1) : date_in.getMonth() + 1)
+                    var d = (date_in.getDate() < 10 ? '0' + (date_in.getDate()) : date_in.getDate())
+                    this.tableData[i].checkin_date = y + '-' + m + '-' + d;
+                }
+                if (res.data.data[i].checkout_date != null) {
+                    var date_out = new Date(res.data.data[i].checkout_date);
+                    var y = date_out.getFullYear()
+                    var m = (date_out.getMonth() + 1 < 10 ? '0' + (date_out.getMonth() + 1) : date_out.getMonth() + 1)
+                    var d = (date_out.getDate() < 10 ? '0' + (date_out.getDate()) : date_out.getDate())
+                    this.tableData[i].checkout_date = y + '-' + m + '-' + d;
+                }
+            }
+        }).catch(err => {
+            console.log(err.response)
+        })
+    },
     methods: {
+        //搜索义工
+        searchVolunteer() {
+            if (this.searchData.volunteerName == "") {
+                this.$message({
+                    showClose: true,
+                    message: "搜索内容为空",
+                    type: 'error'
+                })
+            } else {
+                //搜索义工请求
+                const config = {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                };
+
+                axios.post(`http://127.0.0.1:5000/volunteerlike`, this.searchData).then(res => {
+                    //search_old(this.registerData).then(res => {
+                    console.log(res)
+                    if (res.data.status == "success") {
+                        this.tableData = res.data.data;
+                        for (let i = 0; i < res.data.data.length; i++) {
+                            if (res.data.data[i].checkin_date != null) {
+                                var date_in = new Date(res.data.data[i].checkin_date);
+                                var y = date_in.getFullYear()
+                                var m = (date_in.getMonth() + 1 < 10 ? '0' + (date_in.getMonth() + 1) : date_in.getMonth() + 1)
+                                var d = (date_in.getDate() < 10 ? '0' + (date_in.getDate()) : date_in.getDate())
+                                this.tableData[i].checkin_date = y + '-' + m + '-' + d;
+                            }
+                            if (res.data.data[i].checkout_date != null) {
+                                var date_out = new Date(res.data.data[i].checkout_date);
+                                var y = date_out.getFullYear()
+                                var m = (date_out.getMonth() + 1 < 10 ? '0' + (date_out.getMonth() + 1) : date_out.getMonth() + 1)
+                                var d = (date_out.getDate() < 10 ? '0' + (date_out.getDate()) : date_out.getDate())
+                                this.tableData[i].checkout_date = y + '-' + m + '-' + d;
+                            }
+                        }
+                    } else {
+                        this.$message({
+                            showClose: true,
+                            message: "搜索结果为空",
+                            type: 'error'
+                        })
+                        this.tableData = [];
+                    }
+                }).catch(err => {
+                    console.log(err.response)
+                })
+            }
+
+        },
         //添加按钮
         addVolunteerBtn() {
             this.addVolunteerVisible = true;
         },
         //弹出框中的添加按钮
         addVolunteer() {
-            this.addVolunteerVisible = false;
+            if (this.addData.volunteerName == "" || this.addData.volunteerName == null) {
+                this.$message({
+                    showClose: true,
+                    message: "姓名为空",
+                    type: 'error'
+                })
+            } else {
+                //添加义工请求
+                axios.post(`http://127.0.0.1:5000/volunteer/add-one`, this.addData).then(res => {
+                    console.log(res)
+                    if (res.data.status == "success") {
+                        this.$message({
+                            showClose: true,
+                            message: "添加成功",
+                            type: 'success'
+                        })
+                        //获取义工列表请求
+                        axios.post(`http://127.0.0.1:5000/volunteerlike`, { volunteerName: null }).then(res => {
+                            console.log(res)
+                            this.tableData = res.data.data;
+                            for (let i = 0; i < res.data.data.length; i++) {
+                                if (res.data.data[i].checkin_date != null) {
+                                    var date_in = new Date(res.data.data[i].checkin_date);
+                                    var y = date_in.getFullYear()
+                                    var m = (date_in.getMonth() + 1 < 10 ? '0' + (date_in.getMonth() + 1) : date_in.getMonth() + 1)
+                                    var d = (date_in.getDate() < 10 ? '0' + (date_in.getDate()) : date_in.getDate())
+                                    this.tableData[i].checkin_date = y + '-' + m + '-' + d;
+                                }
+                                if (res.data.data[i].checkout_date != null) {
+                                    var date_out = new Date(res.data.data[i].checkout_date);
+                                    var y = date_out.getFullYear()
+                                    var m = (date_out.getMonth() + 1 < 10 ? '0' + (date_out.getMonth() + 1) : date_out.getMonth() + 1)
+                                    var d = (date_out.getDate() < 10 ? '0' + (date_out.getDate()) : date_out.getDate())
+                                    this.tableData[i].checkout_date = y + '-' + m + '-' + d;
+                                }
+                            }
+                        }).catch(err => {
+                            console.log(err.response)
+                        })
+                    } else {
+                        this.$message({
+                            showClose: true,
+                            message: "添加失败",
+                            type: 'error'
+                        })
+                    }
+                }).catch(err => {
+                    console.log(err.response)
+                })
+                this.addVolunteerVisible = false;
+            }
         },
         //表格中修改按钮
-        modifyVolunteerBtn() {
+        modifyVolunteerBtn(row) {
+            this.modifyData = row;
             this.modifyVolunteerVisible = true;
+
         },
         //弹出框中的修改按钮
         modifyVolunteer() {
             this.modifyVolunteerVisible = false;
-        },
-        deleteVolunteer() {
+            //修改义工请求
+            const config = {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            };
+            console.log(this.modifyData.checkin_date)
+            axios.post(`http://127.0.0.1:5000/volunteer_update/${this.modifyData.volunteerID}`, JSON.stringify(this.modifyData), config).then(res => {
+                console.log(res)
+                if (res.data.msg == "更新成功") {
+                    this.$message({
+                        showClose: true,
+                        message: "修改成功",
+                        type: 'success'
+                    })
+                    //获取义工列表请求
+                    axios.post(`http://127.0.0.1:5000/volunteerlike`, { volunteerName: null }).then(res => {
+                        console.log(res)
+                        this.tableData = res.data.data;
+                        for (let i = 0; i < res.data.data.length; i++) {
+                            if (res.data.data[i].checkin_date != null) {
+                                var date_in = new Date(res.data.data[i].checkin_date);
+                                var y = date_in.getFullYear()
+                                var m = (date_in.getMonth() + 1 < 10 ? '0' + (date_in.getMonth() + 1) : date_in.getMonth() + 1)
+                                var d = (date_in.getDate() < 10 ? '0' + (date_in.getDate()) : date_in.getDate())
+                                this.tableData[i].checkin_date = y + '-' + m + '-' + d;
+                            }
+                            if (res.data.data[i].checkout_date != null) {
+                                var date_out = new Date(res.data.data[i].checkout_date);
+                                var y = date_out.getFullYear()
+                                var m = (date_out.getMonth() + 1 < 10 ? '0' + (date_out.getMonth() + 1) : date_out.getMonth() + 1)
+                                var d = (date_out.getDate() < 10 ? '0' + (date_out.getDate()) : date_out.getDate())
+                                this.tableData[i].checkout_date = y + '-' + m + '-' + d;
+                            }
+                        }
+                    }).catch(err => {
+                        console.log(err.response)
+                    })
+                } else {
+                    this.$message({
+                        showClose: true,
+                        message: "修改失败",
+                        type: 'error'
+                    })
+                }
 
+            }).catch(err => {
+                console.log(err.response)
+            })
+        },
+        deleteVolunteer(row) {
+            //删除义工请求
+            axios.delete(`http://127.0.0.1:5000/volunteer_delete/${row.volunteerID}`).then(res => {
+                console.log(res)
+                if (res.data.msg == "删除成功") {
+                    this.$message({
+                        showClose: true,
+                        message: "删除成功",
+                        type: 'success'
+                    })
+                    //获取义工列表请求
+                    axios.post(`http://127.0.0.1:5000/volunteerlike`, { volunteerName: null }).then(res => {
+                        console.log(res)
+                        this.tableData = res.data.data;
+                        for (let i = 0; i < res.data.data.length; i++) {
+                            if (res.data.data[i].checkin_date != null) {
+                                var date_in = new Date(res.data.data[i].checkin_date);
+                                var y = date_in.getFullYear()
+                                var m = (date_in.getMonth() + 1 < 10 ? '0' + (date_in.getMonth() + 1) : date_in.getMonth() + 1)
+                                var d = (date_in.getDate() < 10 ? '0' + (date_in.getDate()) : date_in.getDate())
+                                this.tableData[i].checkin_date = y + '-' + m + '-' + d;
+                            }
+                            if (res.data.data[i].checkout_date != null) {
+                                var date_out = new Date(res.data.data[i].checkout_date);
+                                var y = date_out.getFullYear()
+                                var m = (date_out.getMonth() + 1 < 10 ? '0' + (date_out.getMonth() + 1) : date_out.getMonth() + 1)
+                                var d = (date_out.getDate() < 10 ? '0' + (date_out.getDate()) : date_out.getDate())
+                                this.tableData[i].checkout_date = y + '-' + m + '-' + d;
+                            }
+                        }
+                    }).catch(err => {
+                        console.log(err.response)
+                    })
+                } else {
+                    this.$message({
+                        showClose: true,
+                        message: "删除失败",
+                        type: 'error'
+                    })
+                }
+
+            }).catch(err => {
+                console.log(err.response)
+            })
+        },
+        //表格中的添加照片按钮
+        addVolunteerPicBtn(row) {
+            this.id_card_pic = row.id_card
+            this.addVolunteerPicVisible = true;
+        },
+        //上传文件onChange钩子函数
+        loadPicFile(file, fileList) {
+            this.face_file = fileList
+        },
+        addVolunteerPic() {
+            let file1 = this.face_file[0].raw;//这里获取上传的文件对象
+            console.log(file1)
+            const file = new File([file1], `${this.id_card_pic}${file1.name.slice(file1.name.length - 4, file1.name.length)}`)
+            console.log(file)
+            let formData = new FormData()
+            formData.append('file', file);
+            const config = {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            };
+            axios.post(`http://127.0.0.1:5000/upload/upload/0`, { file: file },config).then(res => {
+                console.log(res)
+                if(res.data == "file uploaded successfully"){
+                    this.$message({
+                        showClose: true,
+                        message: "添加照片成功",
+                        type: 'success'
+                    })
+                }else{
+                    this.$message({
+                        showClose: true,
+                        message: "添加照片失败",
+                        type: 'error'
+                    })
+                }
+            }).catch(err => {
+                console.log(err.response)
+            })
+            this.addVolunteerPicVisible = false;
         }
     }
 }
