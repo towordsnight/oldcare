@@ -5,7 +5,7 @@ from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 # 定义文件保存路径
-pwd = "C:\\Users\\FUBOFENG\\Desktop\\me\\Smart-Elderlycare\\img\\volunteer\\"
+pwd = "C:\\Users\\FUBOFENG\\Desktop\\me\\Smart-Elderlycare\\img\\"
 
 # 定义文件的保存路径和文件名尾缀
 UPLOAD_FOLDER = os.path.join(pwd)

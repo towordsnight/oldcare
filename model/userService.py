@@ -93,9 +93,6 @@ def add_sys_user(username, psw, REAL_NAME, SEX, EMAIL, PHONE):
     try:
         result = session.add(user)
         session.commit()
-        this = session.query(User).filter(User.username == username).first()
-        session.query(User).filter(User.username == username).update({'CREATEBY': this.userID, 'UPDATEBY': this.userID})
-        session.commit()
     except Exception as e:
         logging.error(e)
         return False
