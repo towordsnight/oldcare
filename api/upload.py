@@ -5,7 +5,7 @@ from werkzeug.utils import secure_filename
 
 upload = Blueprint("upload", __name__, template_folder="templates")
 # 定义文件保存路径
-pwd = "Smart-Elderlycare\\img"
+pwd = "img"
 vol = "volunteer"
 eld = "elderly"
 # 定义文件的保存路径和文件名尾缀
