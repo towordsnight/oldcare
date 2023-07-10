@@ -5,40 +5,18 @@ from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 # 定义文件保存路径
-pwd = "C:\\Users\\FUBOFENG\\Desktop\\me\\Smart-Elderlycare\\img\\"
-
+pwd = "Smart-Elderlycare\\img"
+vol = "volunteer"
+eld = "elderly"
 # 定义文件的保存路径和文件名尾缀
-UPLOAD_FOLDER = os.path.join(pwd)
+UPLOAD_FOLDER_VOL = os.path.join(pwd, vol)
+UPLOAD_FOLDER_ELD = os.path.join(pwd, eld)
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['UPLOAD_FOLDER_VOL'] = UPLOAD_FOLDER_VOL
+app.config['UPLOAD_FOLDER_ELD'] = UPLOAD_FOLDER_ELD
 
 HOST = "127.0.0.1"
 PORT = 5000
-
-
-@app.route('/index')
-def index():
-    """
-    返回一个网页端提交的页面
-    :return:
-    """
-    html = Template("""
-    <!DOCTYPE html>
-    <html>
-       <body>
-
-          <form action = "http://$HOST:$PORT/upload" method = "POST"
-             enctype = "multipart/form-data">
-             <input type = "file" name = "file" />
-             <input type = "submit"/>
-          </form>
-
-       </body>
-    </html>
-    """)
-    html = html.substitute({"HOST": HOST, "PORT": PORT})
-    return html
-
 
 def allowed_file(filename):
     """
@@ -50,8 +28,8 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-@app.route('/upload', methods=['GET', 'POST'])
-def upload_file():
+@app.route('/upload/<int:type>', methods=['GET', 'POST'])
+def upload_file(type):
     """
     上传文件到save_file文件夹
     以requests上传举例
@@ -66,27 +44,30 @@ def upload_file():
         return 'No selected file'
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        if type == 0:
+            file.save(os.path.join(app.config['UPLOAD_FOLDER_VOL'], filename))
+        else:
+            file.save(os.path.join(app.config['UPLOAD_FOLDER_ELD'], filename))
+
         print("filepath:"+app.config['UPLOAD_FOLDER'])
         print("filename:"+filename)
         return 'file uploaded successfully'
     return "file uploaded Fail"
 
 
-@app.route("/download")
-def download_file():
+@app.route("/download/<int:type>")
+def download_file(type):
     """
     下载src_file目录下面的文件
     eg：下载当前目录下面的123.tar 文件，eg:http://localhost:5000/download?fileId=123.tar
     :return:
     """
     file_name = request.args.get('fileId')
-    file_path = os.path.join(pwd, 'src_file', file_name)
+    if type == 0:
+        file_path = os.path.join(pwd, vol, file_name)
+    else :
+        file_path = os.path.join(pwd, eld, file_name)
     if os.path.isfile(file_path):
         return send_file(file_path, as_attachment=True)
     else:
         return "The downloaded file does not exist"
-
-
-if __name__ == '__main__':
-    app.run(host=HOST, port=PORT)

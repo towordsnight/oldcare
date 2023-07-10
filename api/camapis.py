@@ -53,7 +53,7 @@ def video_feed():
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
 @index.route('/video_feed_2')
-def video_feed():
+def video_feed_2():
     """Video streaming route. Put this in the src attribute of an img tag."""
     return Response(genWeb(Camera2()),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
