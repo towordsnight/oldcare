@@ -50,7 +50,10 @@ def get_event_info_list(event_type):
     session = Session()
     try:
         q = session.query(EventInfo)
-        q = q.filter(EventInfo.event_type == event_type).order_by(EventInfo.event_start.desc()).all()
+        if event_type is None:
+            q = q.filter().order_by(EventInfo.event_start.desc()).all()
+        else:
+            q = q.filter(EventInfo.event_type == event_type).order_by(EventInfo.event_start.desc()).all()
     except Exception as e:
         logging.error(e)
         return None
