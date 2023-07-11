@@ -1,10 +1,13 @@
-from time import time
-
 from flask import Flask, Response, Blueprint, render_template
 from camera.camrea import BaseCamera
 from camera.video_stream import LoadStreams
 import cv2
 from flask_socketio import SocketIO, emit
+from threading import Lock
+
+thread = None
+thread_lock = Lock()
+
 
 # index = Blueprint("index", __name__, template_folder="templates")
 index = Flask(__name__)
@@ -74,8 +77,18 @@ def genWeb(camera):
 
 
 @socketio.on('connect', namespace=name_space)
-def connected_msg():
-    print('client connected.')
+def test_connect():
+    """
+    此函数在建立socket连接时被调用
+    """
+    print("socket 建立连接")
+    global thread
+    with thread_lock:
+        print(thread)
+        if thread is None:
+            # 如果socket连接，则开启一个线程，专门给前端发送消息
+            thread = socketio.start_background_task(target=background_thread)
+
 
 @socketio.on('disconnect', namespace=name_space)
 def disconnect_msg():
@@ -87,21 +100,24 @@ def mtest_message(message):
     emit('my_response', {'data': message['data'], 'count': 1})
 
 
-@index.route('/push')
-def push_once():
-    event_name = 'echo'
-    broadcasted_data = {'data': "test message!"}
-    # 设置广播数据
-    socketio.emit(event_name, broadcasted_data, namespace=name_space)
-    return 'done!'
+def background_thread():
+    """
+    该线程专门用来给前端发送消息
+    :return:
+    """
+    while True:
+        """这里传递事件的信息"""
+        """一旦建立连接该线程一直存在"""
 
-@index.route('/pushs')
-def pushs():
-    event_name = 'echo'
-    # 设置广播数据
-    for i in range(100):
-        socketio.emit(event_name, "broadcasted_data"+i, broadcast=False, namespace=name_space)
-    return 'done!'
+
+
+
+
+        socketio.sleep(1)
+
+
+
+
 
 
 
