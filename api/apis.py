@@ -11,6 +11,10 @@ from entity.Elderly import Elderly
 index_page = Blueprint("index_page", __name__)
 
 
+@index_page.route('/test', methods=['GET'])
+def gettest():
+    return "test"
+
 # 生成访问令牌
 def generate_access_token(username):
     # 设置访问令牌的有效期

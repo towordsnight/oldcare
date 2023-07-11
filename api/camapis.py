@@ -4,9 +4,13 @@ from flask import Flask, Response, Blueprint, render_template
 from camera.camrea import BaseCamera
 from camera.video_stream import LoadStreams
 import cv2
+from flask_socketio import SocketIO, emit
 
-index = Blueprint("index", __name__, template_folder="templates")
-
+# index = Blueprint("index", __name__, template_folder="templates")
+index = Flask(__name__)
+socketio = SocketIO()
+socketio.init_app(index, cors_allowed_origins='*')
+name_space = '/echo'
 
 class Camera(BaseCamera):
     @staticmethod
@@ -66,3 +70,40 @@ def genWeb(camera):
         frame = camera.get_frame()
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+
+
+@socketio.on('connect', namespace=name_space)
+def connected_msg():
+    print('client connected.')
+
+@socketio.on('disconnect', namespace=name_space)
+def disconnect_msg():
+    print('client disconnected.')
+
+@socketio.on('my_event', namespace=name_space)
+def mtest_message(message):
+    print(message)
+    emit('my_response', {'data': message['data'], 'count': 1})
+
+
+@index.route('/push')
+def push_once():
+    event_name = 'echo'
+    broadcasted_data = {'data': "test message!"}
+    # 设置广播数据
+    socketio.emit(event_name, broadcasted_data, namespace=name_space)
+    return 'done!'
+
+@index.route('/pushs')
+def pushs():
+    event_name = 'echo'
+    # 设置广播数据
+    for i in range(100):
+        socketio.emit(event_name, "broadcasted_data"+i, broadcast=False, namespace=name_space)
+    return 'done!'
+
+
+
+if __name__ == '__main__':
+    socketio.run(index, host='0.0.0.0', port=5001)
