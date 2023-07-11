@@ -2,6 +2,7 @@ from entity.Event import Event as EventInfo
 from config import sqlInit
 from sqlalchemy.orm import sessionmaker
 import logging
+from datetime import datetime
 
 Session = sessionmaker(bind=sqlInit.db)
 
@@ -17,10 +18,10 @@ def get_event_info_by_id(id):
     return result
 
 
-def add_event_info(event_type, event_start, event_location, oldperson_id, event_end, happening):
+def add_event_info(event_type, event_location, oldperson_id, elderlyName):
     session = Session()
-    user = EventInfo(event_type=event_type, event_start=event_start, event_location=event_location, oldperson_id=oldperson_id,
-                     event_end=event_end, happening=happening
+    user = EventInfo(event_type=event_type, event_start=datetime.now(), event_location=event_location, oldperson_id=oldperson_id,
+                     elderlyName=elderlyName
                      )
     print(user)
     try:
@@ -55,5 +56,4 @@ def get_event_info_list(event_type):
         return None
     session.close()
     return q
-
 

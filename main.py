@@ -5,12 +5,16 @@ import flask_cors
 from api.apis import index_page
 from api.camapis import index
 from api.upload import upload
-
+from api.eventapi import event
 app = Flask(__name__)
 cors = flask_cors.CORS(app, resources={r"/*": {"origins": "*"}})
 app.register_blueprint(index_page)
 app.register_blueprint(index, url_prefix="/cam")
 app.register_blueprint(upload, url_prefix="/upload")
+app.register_blueprint(event, url_prefix="/event")
+
+
+
 if __name__ == '__main__':
 
 

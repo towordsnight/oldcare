@@ -1,3 +1,5 @@
+import datetime
+
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, DateTime, CHAR
 
@@ -12,8 +14,7 @@ class Event(Base):
     event_start = Column(DateTime, nullable=False)
     event_location = Column(String(20))
     oldperson_id = Column(Integer)
-    event_end = Column(DateTime, nullable=False)
-    happening = Column(Integer, nullable=False)
+    elderlyName = Column(String(20))
     __table_args__ = {
         "mysql_charset": "utf8"
     }
