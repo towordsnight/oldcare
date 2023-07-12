@@ -1,18 +1,20 @@
-from flask import Flask, Response, Blueprint, render_template
+from flask import Flask, Response, Blueprint, render_template, current_app, request
 from camera.camrea import BaseCamera
 from camera.video_stream import LoadStreams
 import cv2
 from flask_socketio import SocketIO, emit
-from threading import Lock
+from threading import Lock,Thread
+
+
 
 thread = None
 thread_lock = Lock()
 
 
 # index = Blueprint("index", __name__, template_folder="templates")
-index = Flask(__name__)
+app = Flask(__name__)
 socketio = SocketIO()
-socketio.init_app(index, cors_allowed_origins='*')
+socketio.init_app(app, cors_allowed_origins='*')
 name_space = '/echo'
 
 class Camera(BaseCamera):
@@ -46,20 +48,20 @@ class Camera2(BaseCamera):
             result = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
             yield cv2.imencode('.jpg', result)[1].tobytes()
 
-@index.route('/')
+@app.route('/')
 def index_to():
     return render_template('test.html')
 
 
 # <img src="{{url_for('cam/video_play')}}" class="img-fluid" height="500">
 
-@index.route('/video_feed')
+@app.route('/video_feed')
 def video_feed():
     """Video streaming route. Put this in the src attribute of an img tag."""
     return Response(genWeb(Camera()),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
-@index.route('/video_feed_2')
+@app.route('/video_feed_2')
 def video_feed_2():
     """Video streaming route. Put this in the src attribute of an img tag."""
     return Response(genWeb(Camera2()),
@@ -83,22 +85,12 @@ def test_connect():
     """
     print("socket 建立连接")
     global thread
-    with thread_lock:
-        print(thread)
-        if thread is None:
-            # 如果socket连接，则开启一个线程，专门给前端发送消息
-            thread = socketio.start_background_task(target=background_thread)
-
-
-@socketio.on('disconnect', namespace=name_space)
-def disconnect_msg():
-    print('client disconnected.')
-
-@socketio.on('my_event', namespace=name_space)
-def mtest_message(message):
-    print(message)
-    emit('my_response', {'data': message['data'], 'count': 1})
-
+    with app.app_context():
+        with thread_lock:
+            print(thread)
+            if thread is None:
+                # 如果socket连接，则开启一个线程，专门给前端发送消息
+                thread = socketio.start_background_task(target=background_thread)
 
 def background_thread():
     """
@@ -107,19 +99,25 @@ def background_thread():
     """
     while True:
         """这里传递事件的信息"""
-        """一旦建立连接该线程一直存在"""
-
-
-
-
-
+        """一旦建立连接线程一直存在"""
+        with app.app_context():
+            socketio.emit('server_response', "test", room=None, namespace=name_space)
         socketio.sleep(1)
 
 
+
+@socketio.on('disconnect', namespace=name_space)
+def disconnect_msg():
+    print('client disconnected.')
+
+@socketio.on('server_response', namespace=name_space)
+def mtest_message(message):
+    print(message)
+    emit('server_response', {'data': message['data'], 'count': 1})
 
 
 
 
 
 if __name__ == '__main__':
-    socketio.run(index, host='0.0.0.0', port=5001)
+    socketio.run(app, host='0.0.0.0', port=5001)
