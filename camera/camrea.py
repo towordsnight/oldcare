@@ -91,6 +91,11 @@ class BaseCamera(object):
     @classmethod
     def _thread(cls):
         """Camera background thread."""
+        """
+        不断调用在camapis文件里的frames生成图像帧然后赋值给类的成员frame
+        再通过get_frame将图像帧(frame)返回给调用者
+        
+        """
         print('Starting camera thread.')
         frames_iterator = cls.frames()
         for frame in frames_iterator:
