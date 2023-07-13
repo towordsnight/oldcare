@@ -1,4 +1,5 @@
-from flask import Flask, Response, Blueprint, render_template, current_app, request
+from flask import Flask, Response
+import flask_cors
 from camera.camrea import BaseCamera
 from camera.video_stream import LoadStreams
 import cv2
@@ -53,6 +54,7 @@ queue_event = CircularQueue(max_size=15)
 
 # index = Blueprint("index", __name__, template_folder="templates")
 app = Flask(__name__)
+cors = flask_cors.CORS(app, resources={r"/*": {"origins": "*"}})
 socketio = SocketIO()
 socketio.init_app(app, cors_allowed_origins='*')
 name_space = '/echo'
@@ -100,6 +102,8 @@ def genWeb(camera):
 def video_locality_close():
     global video_opend
     video_opend = True
+
+    return "close operation success"
 
 
 @app.route('/video_locality')

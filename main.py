@@ -1,7 +1,6 @@
 from flask import Flask
 import flask_cors
 from api.apis import index_page
-from api.camapis import index
 from api.upload import upload
 from api.eventapi import event
 
