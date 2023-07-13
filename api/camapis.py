@@ -64,8 +64,8 @@ name_space = '/echo'
 
 
 class Camera(BaseCamera):
-    @staticmethod
-    def frames():
+    # @staticmethod
+    def frames(self):
         # 此处为自己的视频流url 格式 "rtsp://%s:%s@%s//Streaming/Channels/%d" % (name, pwd, ip, channel)
         # 例如
         # source = 'rtmp://8.130.83.55:1935/mylive'
@@ -84,11 +84,13 @@ class Camera(BaseCamera):
             frame = cv2.cvtColor(im0, cv2.COLOR_BGR2RGB)
             result = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
             buffer = cv2.imencode('.jpg', result)[1]
+            # self.frame = base64.b64encode(buffer)
             yield base64.b64encode(buffer)
 
 class Camera2(BaseCamera):
-    @staticmethod
-    def frames():
+
+    def frames(self):
+
         # 此处为自己的视频流url 格式 "rtsp://%s:%s@%s//Streaming/Channels/%d" % (name, pwd, ip, channel)
         # 例如
         # source = 'rtmp://8.130.83.55:1935/mylive'
@@ -97,12 +99,11 @@ class Camera2(BaseCamera):
         try:
             dataset = LoadStreams(source)
             for im0s in dataset:
-                if im0s is None:
-                    break
                 im0 = im0s[0].copy()
                 frame = cv2.cvtColor(im0, cv2.COLOR_BGR2RGB)
                 result = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
                 buffer = cv2.imencode('.jpg', result)[1]
+                # self.frame = base64.b64encode(buffer)
                 yield base64.b64encode(buffer)
         except ImportError:
             print("无视频源")
@@ -195,6 +196,7 @@ def video_thread2(camera):
             break
 
         if video_opend == False:
+            print(video_opend)
             queue_img2.enqueue(frame)
         sleep(0.05)
 
