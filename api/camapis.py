@@ -94,6 +94,8 @@ class Camera2(BaseCamera):
         try:
             dataset = LoadStreams(source)
             for im0s in dataset:
+                if im0s is None:
+                    break
                 im0 = im0s[0].copy()
                 frame = cv2.cvtColor(im0, cv2.COLOR_BGR2RGB)
                 result = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
@@ -121,7 +123,7 @@ def genWeb(camera):
 @app.route('/video_locality_close')
 def video_locality_close():
     global video_opend
-    video_opend = True
+    video_opend = False
 
     return "close operation success"
 
@@ -129,6 +131,9 @@ def video_locality_close():
 @app.route('/video_locality')
 def video_org():
     global thread_video1  # 全局变量thread
+    global video_opend
+    # 打开本地摄像头
+    video_opend = True
     with video_thread_lock:  # 该行实现了系统同时只能有一个连接，因为全局变量thread只有一个，确保当有两个客户端同时访问时不会对thread重复赋值
         print(video_thread1)
         if thread_video1 is None:
@@ -153,7 +158,8 @@ def video_thread1(camera):
         frame = camera.get_frame()
         queue_img1.enqueue(frame)
         sleep(0.05)
-        if video_opend:
+        # 本地摄像头未打开
+        if not video_opend:
             break
 
 
@@ -168,6 +174,10 @@ def video_thread2(camera):
     """
     while True:
         frame = camera.get_frame()
+        if frame is None:
+            print("无法获取远程视频流")
+            break
+
         if not video_opend:
             queue_img2.enqueue(frame)
         sleep(0.05)
