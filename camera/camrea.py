@@ -110,3 +110,63 @@ class BaseCamera(object):
                 print('Stopping camera thread due to inactivity.')
                 break
         BaseCamera.thread = None
+
+
+class BaseCamera2(object):
+    thread = None  # 从相机读取帧的背景线程
+    frame = None  # 当前帧由后台线程存储在此处
+    last_access = 0  # 上次客户端访问相机的时间
+    event = CameraEvent()
+
+    def __init__(self):
+        """Start the background camera thread if it isn't running yet."""
+        """若不存在线程则创建一个线程来运行摄像机"""
+        if BaseCamera2.thread is None:
+            BaseCamera2.last_access = time.time()  # 记录访问时间
+
+            # start background frame thread , 开启线程
+            BaseCamera2.thread = threading.Thread(target=self._thread)
+            BaseCamera2.thread.start()
+
+            # 等待视频帧
+            while self.get_frame() is None:
+                time.sleep(0)
+
+    def get_frame(self):
+        """返回生成的帧."""
+        BaseCamera2.last_access = time.time()
+
+        # wait for a signal from the camera thread
+        BaseCamera2.event.wait()
+        BaseCamera2.event.clear()
+
+        return BaseCamera2.frame
+
+    @staticmethod
+    def frames(path):
+        """"Generator that returns frames from the camera."""
+        """生成视频流的帧，具体实现在camapis的static方法中，这样每次调用该方法生成帧时不用再初始化该类"""
+        raise RuntimeError('Must be implemented by subclasses.')
+
+    @classmethod
+    def _thread(cls):
+        """Camera background thread."""
+        """
+        不断调用在camapis文件里的frames生成图像帧然后赋值给类的成员frame
+        再通过get_frame将图像帧(frame)返回给调用者
+
+        """
+        print('Starting camera thread.')
+        frames_iterator = cls.frames()
+        for frame in frames_iterator:
+            BaseCamera2.frame = frame
+            BaseCamera2.event.set()  # send signal to clients
+            time.sleep(0)
+
+            # if there hasn't been any clients asking for frames in
+            # the last 10 seconds then stop the thread
+            if time.time() - BaseCamera2.last_access > 60:
+                frames_iterator.close()
+                print('Stopping camera thread due to inactivity.')
+                break
+        BaseCamera2.thread = None

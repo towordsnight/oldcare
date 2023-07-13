@@ -1,6 +1,6 @@
 from flask import Flask, Response
 import flask_cors
-from camera.camrea import BaseCamera
+from camera.camrea import BaseCamera,BaseCamera2
 from camera.video_stream import LoadStreams
 import cv2
 import base64
@@ -64,8 +64,8 @@ name_space = '/echo'
 
 
 class Camera(BaseCamera):
-    # @staticmethod
-    def frames(self):
+    @staticmethod
+    def frames():
         # 此处为自己的视频流url 格式 "rtsp://%s:%s@%s//Streaming/Channels/%d" % (name, pwd, ip, channel)
         # 例如
         # source = 'rtmp://8.130.83.55:1935/mylive'
@@ -74,10 +74,7 @@ class Camera(BaseCamera):
         dataset = LoadStreams(source)
         for im0s in dataset:
             im0 = im0s[0].copy()
-            # frame = cv2.cvtColor(im0, cv2.COLOR_BGR2RGB)
-            # result = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-            # yield cv2.imencode('.jpg', frame)[1].tobytes()
-
+            # yield cv2.imencode('.jpg', result)[1].tobytes()
             """
             使用socket传输照片时需要转为base64编码
             """
@@ -87,9 +84,9 @@ class Camera(BaseCamera):
             # self.frame = base64.b64encode(buffer)
             yield base64.b64encode(buffer)
 
-class Camera2(BaseCamera):
-
-    def frames(self):
+class Camera2(BaseCamera2):
+    @staticmethod
+    def frames():
 
         # 此处为自己的视频流url 格式 "rtsp://%s:%s@%s//Streaming/Channels/%d" % (name, pwd, ip, channel)
         # 例如
@@ -172,11 +169,14 @@ def video_thread1(camera):
     """
     while True:
         frame = camera.get_frame()
-        queue_img1.enqueue(frame)
+        if video_opend:
+            queue_img1.enqueue(frame)
+
+        if not video_opend:
+            sleep(2)
         sleep(0.05)
         # 本地摄像头未打开
-        if video_opend == False:
-            break
+
 
 
 """
