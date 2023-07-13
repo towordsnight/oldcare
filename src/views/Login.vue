@@ -85,7 +85,6 @@ export default {
                         // const token = res.data.access_token
                         window.localStorage.clear('token');
                         window.localStorage.setItem('token', this.user.username);
-                        this.$router.push('/camera');
                         this.$router.push('/home');
 
                     } else if (res.data.status == "error"){

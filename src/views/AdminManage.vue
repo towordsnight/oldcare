@@ -85,7 +85,7 @@
 
     <!-- 工作人员数据表格 -->
     <div>
-        <el-table :data="tableData" style="width: 100%">
+        <el-table :data="tableData" style="width: 930px">
             <el-table-column fixed prop="userID" label="序号" width="70" />
             <el-table-column fixed prop="username" label="姓名" width="120" />
             <el-table-column prop="realname" label="用户真实姓名" width="120" />
@@ -185,6 +185,7 @@ export default {
                     console.log(res)
                     if (res.data.status == "success") {
                         this.tableData = res.data.data;
+                        
                     } else {
                         this.$message({
                             showClose: true,

@@ -4,22 +4,17 @@
             <el-icon :size="25">
                 <svg t="1688450180361" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
                     p-id="14707" width="128" height="128">
-                    <path
-                        d="M130.901333 529.493333l149.205334 130.517334a8.533333 8.533333 0 0 0 14.122666-6.4V392.533333a8.533333 8.533333 0 0 0-14.122666-6.4L130.901333 
-                        516.608a8.533333 8.533333 0 0 0 0 12.8z"
-                        fill="#515151" p-id="14708"></path>
-                    <path
-                        d="M128 213.333333m42.666667 0l682.666666 0q42.666667 0 42.666667 42.666667l0 0q0 42.666667-42.666667 42.666667l-682.666666 
-                        0q-42.666667 0-42.666667-42.666667l0 0q0-42.666667 42.666667-42.666667Z"
-                        fill="#515151" p-id="14709"></path>
-                    <path
-                        d="M128 725.333333m42.666667 0l682.666666 0q42.666667 0 42.666667 42.666667l0 0q0 42.666667-42.666667 42.666667l-682.666666 
-                        0q-42.666667 0-42.666667-42.666667l0 0q0-42.666667 42.666667-42.666667Z"
-                        fill="#515151" p-id="14710"></path>
-                    <path
-                        d="M384 469.333333m42.666667 0l426.666666 0q42.666667 0 42.666667 42.666667l0 0q0 42.666667-42.666667 42.666667l-426.666666 
-                        0q-42.666667 0-42.666667-42.666667l0 0q0-42.666667 42.666667-42.666667Z"
-                        fill="#515151" p-id="14711"></path>
+                    <path d="M130.901333 529.493333l149.205334 130.517334a8.533333 8.533333 0 0 0 14.122666-6.4V392.533333a8.533333 8.533333 0 0 0-14.122666-6.4L130.901333 
+                        516.608a8.533333 8.533333 0 0 0 0 12.8z" fill="#515151" p-id="14708"></path>
+                    <path d="M128 213.333333m42.666667 0l682.666666 0q42.666667 0 42.666667 42.666667l0 0q0 42.666667-42.666667 42.666667l-682.666666 
+                        0q-42.666667 0-42.666667-42.666667l0 0q0-42.666667 42.666667-42.666667Z" fill="#515151"
+                        p-id="14709"></path>
+                    <path d="M128 725.333333m42.666667 0l682.666666 0q42.666667 0 42.666667 42.666667l0 0q0 42.666667-42.666667 42.666667l-682.666666 
+                        0q-42.666667 0-42.666667-42.666667l0 0q0-42.666667 42.666667-42.666667Z" fill="#515151"
+                        p-id="14710"></path>
+                    <path d="M384 469.333333m42.666667 0l426.666666 0q42.666667 0 42.666667 42.666667l0 0q0 42.666667-42.666667 42.666667l-426.666666 
+                        0q-42.666667 0-42.666667-42.666667l0 0q0-42.666667 42.666667-42.666667Z" fill="#515151"
+                        p-id="14711"></path>
                 </svg>
             </el-icon>
         </el-button>
@@ -39,10 +34,10 @@
             </el-aside>
             <el-container>
                 <el-main class="main">
-                    <img v-show="false" style="display: block;-webkit-user-select: none;margin: auto;" src="http://127.0.0.1:5000/cam/video_feed"
+                    <!-- <img v-show="false" style="display: block;-webkit-user-select: none;margin: auto;" src="http://127.0.0.1:5001/video_feed"
                 height="500" width="900">
-                <img v-show="false" style="display: block;-webkit-user-select: none;margin: auto;" src="http://127.0.0.1:5000/cam/video_feed_2"
-                height="500" width="900">
+                <img v-show="false" style="display: block;-webkit-user-select: none;margin: auto;" src="http://127.0.0.1:5001/video_feed_2"
+                height="500" width="900"> -->
                     <router-view />
 
                 </el-main>
@@ -52,6 +47,7 @@
 </template>
 <script lang="ts" setup>
 import Menu from './Menu.vue';
+import axios from 'axios';
 import { ref } from 'vue'
 import { Fold } from '@element-plus/icons-vue';
 let isCollapse = ref(false)
@@ -81,4 +77,5 @@ const toggle = (): void => {
 .svg_con {
     height: auto;
 
-}</style>
+}
+</style>

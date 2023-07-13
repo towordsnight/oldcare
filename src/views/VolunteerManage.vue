@@ -98,7 +98,7 @@
 
     <!-- 义工数据表格 -->
     <div>
-        <el-table :data="tableData" style="width: 100%">
+        <el-table :data="tableData" style="width: 1050px">
             <el-table-column fixed type="expand">
                 <template #default="props">
                     <div style="margin-left: 50px;">
@@ -120,7 +120,7 @@
             <el-table-column fixed prop="volunteerName" label="姓名" width="120" />
             <el-table-column prop="gender" label="性别" width="70" />
             <el-table-column prop="phone" label="电话" width="120" />
-            <el-table-column prop="id_card" label="身份证号" width="100" />
+            <el-table-column prop="id_card" label="身份证号" width="120" />
             <el-table-column prop="checkin_date" label="访问日期" width="150" />
             <el-table-column prop="checkout_date" label="离开日期" width="150" />
             <el-table-column fixed="right" label="操作" width="250">
@@ -246,6 +246,13 @@ export default {
                     var d = (date_out.getDate() < 10 ? '0' + (date_out.getDate()) : date_out.getDate())
                     this.tableData[i].checkout_date = y + '-' + m + '-' + d;
                 }
+                if (res.data.data[i].created != null) {
+                    var date_created = new Date(res.data.data[i].created);
+                    var y = date_created.getFullYear()
+                    var m = (date_created.getMonth() + 1 < 10 ? '0' + (date_created.getMonth() + 1) : date_created.getMonth() + 1)
+                    var d = (date_created.getDate() < 10 ? '0' + (date_created.getDate()) : date_created.getDate())
+                    this.tableData[i].created = y + '-' + m + '-' + d;
+                }
             }
         }).catch(err => {
             console.log(err.response)
@@ -287,6 +294,13 @@ export default {
                                 var m = (date_out.getMonth() + 1 < 10 ? '0' + (date_out.getMonth() + 1) : date_out.getMonth() + 1)
                                 var d = (date_out.getDate() < 10 ? '0' + (date_out.getDate()) : date_out.getDate())
                                 this.tableData[i].checkout_date = y + '-' + m + '-' + d;
+                            }
+                            if (res.data.data[i].created != null) {
+                                var date_created = new Date(res.data.data[i].created);
+                                var y = date_created.getFullYear()
+                                var m = (date_created.getMonth() + 1 < 10 ? '0' + (date_created.getMonth() + 1) : date_created.getMonth() + 1)
+                                var d = (date_created.getDate() < 10 ? '0' + (date_created.getDate()) : date_created.getDate())
+                                this.tableData[i].created = y + '-' + m + '-' + d;
                             }
                         }
                     } else {
@@ -343,6 +357,13 @@ export default {
                                     var m = (date_out.getMonth() + 1 < 10 ? '0' + (date_out.getMonth() + 1) : date_out.getMonth() + 1)
                                     var d = (date_out.getDate() < 10 ? '0' + (date_out.getDate()) : date_out.getDate())
                                     this.tableData[i].checkout_date = y + '-' + m + '-' + d;
+                                }
+                                if (res.data.data[i].created != null) {
+                                    var date_created = new Date(res.data.data[i].created);
+                                    var y = date_created.getFullYear()
+                                    var m = (date_created.getMonth() + 1 < 10 ? '0' + (date_created.getMonth() + 1) : date_created.getMonth() + 1)
+                                    var d = (date_created.getDate() < 10 ? '0' + (date_created.getDate()) : date_created.getDate())
+                                    this.tableData[i].created = y + '-' + m + '-' + d;
                                 }
                             }
                         }).catch(err => {
@@ -404,6 +425,13 @@ export default {
                                 var d = (date_out.getDate() < 10 ? '0' + (date_out.getDate()) : date_out.getDate())
                                 this.tableData[i].checkout_date = y + '-' + m + '-' + d;
                             }
+                            if (res.data.data[i].created != null) {
+                                var date_created = new Date(res.data.data[i].created);
+                                var y = date_created.getFullYear()
+                                var m = (date_created.getMonth() + 1 < 10 ? '0' + (date_created.getMonth() + 1) : date_created.getMonth() + 1)
+                                var d = (date_created.getDate() < 10 ? '0' + (date_created.getDate()) : date_created.getDate())
+                                this.tableData[i].created = y + '-' + m + '-' + d;
+                            }
                         }
                     }).catch(err => {
                         console.log(err.response)
@@ -449,6 +477,13 @@ export default {
                                 var d = (date_out.getDate() < 10 ? '0' + (date_out.getDate()) : date_out.getDate())
                                 this.tableData[i].checkout_date = y + '-' + m + '-' + d;
                             }
+                            if (res.data.data[i].created != null) {
+                                var date_created = new Date(res.data.data[i].created);
+                                var y = date_created.getFullYear()
+                                var m = (date_created.getMonth() + 1 < 10 ? '0' + (date_created.getMonth() + 1) : date_created.getMonth() + 1)
+                                var d = (date_created.getDate() < 10 ? '0' + (date_created.getDate()) : date_created.getDate())
+                                this.tableData[i].created = y + '-' + m + '-' + d;
+                            }
                         }
                     }).catch(err => {
                         console.log(err.response)
@@ -486,15 +521,15 @@ export default {
                     'Content-Type': 'multipart/form-data'
                 }
             };
-            axios.post(`http://127.0.0.1:5000/upload/upload/0`, { file: file },config).then(res => {
+            axios.post(`http://127.0.0.1:5000/upload/upload/0`, { file: file }, config).then(res => {
                 console.log(res)
-                if(res.data == "file uploaded successfully"){
+                if (res.data == "file uploaded successfully") {
                     this.$message({
                         showClose: true,
                         message: "添加照片成功",
                         type: 'success'
                     })
-                }else{
+                } else {
                     this.$message({
                         showClose: true,
                         message: "添加照片失败",

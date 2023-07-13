@@ -277,8 +277,8 @@
         </el-dialog>
     </div>
 
-     <!-- 添加照片弹出框 -->
-     <div>
+    <!-- 添加照片弹出框 -->
+    <div>
         <el-dialog v-model="addOldPicVisible" title="添加照片" style="width:985px;">
             <div style="display: flex;flex-direction: row;">
                 <div style="margin-left:30px;width:450px;height:210px;">
@@ -334,8 +334,6 @@ export default {
                     var m = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1)
                     var d = (date.getDate() < 10 ? '0' + (date.getDate()) : date.getDate())
                     this.tableData[i].birthday = y + '-' + m + '-' + d;
-                    //this.tableData[i].birthday = date.getFullYear() + '-' +(date.getMonth() + 1) + '-' +date.getDate();
-                    //this.tableData[i].birthday = date;
                 }
                 if (res.data.data.elderly[i].checkin_date != null) {
                     var date_in = new Date(res.data.data.elderly[i].checkin_date);
@@ -343,7 +341,6 @@ export default {
                     var m = (date_in.getMonth() + 1 < 10 ? '0' + (date_in.getMonth() + 1) : date_in.getMonth() + 1)
                     var d = (date_in.getDate() < 10 ? '0' + (date_in.getDate()) : date_in.getDate())
                     this.tableData[i].checkin_date = y + '-' + m + '-' + d;
-                    //this.tableData[i].checkin_date = date_in.getFullYear() + '-' + (date_in.getMonth() + 1) + '-' + date_in.getDate();
                 }
                 if (res.data.data.elderly[i].checkout_date != null) {
                     var date_out = new Date(res.data.data.elderly[i].checkout_date);
@@ -351,7 +348,13 @@ export default {
                     var m = (date_out.getMonth() + 1 < 10 ? '0' + (date_out.getMonth() + 1) : date_out.getMonth() + 1)
                     var d = (date_out.getDate() < 10 ? '0' + (date_out.getDate()) : date_out.getDate())
                     this.tableData[i].checkout_date = y + '-' + m + '-' + d;
-                    //this.tableData[i].checkout_date = date_out.getFullYear() + '-' + (date_out.getMonth() + 1) + '-' + date_out.getDate();
+                }
+                if (res.data.data.elderly[i].created != null) {
+                    var date_out = new Date(res.data.data.elderly[i].created);
+                    var y = date_out.getFullYear()
+                    var m = (date_out.getMonth() + 1 < 10 ? '0' + (date_out.getMonth() + 1) : date_out.getMonth() + 1)
+                    var d = (date_out.getDate() < 10 ? '0' + (date_out.getDate()) : date_out.getDate())
+                    this.tableData[i].created = y + '-' + m + '-' + d;
                 }
             }
         }).catch(err => {
@@ -405,6 +408,13 @@ export default {
                                 var d = (date_out.getDate() < 10 ? '0' + (date_out.getDate()) : date_out.getDate())
                                 this.tableData[i].checkout_date = y + '-' + m + '-' + d;
                                 //this.tableData[i].checkout_date = date_out.getFullYear() + '-' + (date_out.getMonth() + 1) + '-' + date_out.getDate();
+                            }
+                            if (res.data.data[i].created != null) {
+                                var date_out = new Date(res.data.data[i].created);
+                                var y = date_out.getFullYear()
+                                var m = (date_out.getMonth() + 1 < 10 ? '0' + (date_out.getMonth() + 1) : date_out.getMonth() + 1)
+                                var d = (date_out.getDate() < 10 ? '0' + (date_out.getDate()) : date_out.getDate())
+                                this.tableData[i].created = y + '-' + m + '-' + d;
                             }
                         }
                     } else {
@@ -505,6 +515,13 @@ export default {
                                     this.tableData[i].checkout_date = y + '-' + m + '-' + d;
                                     //this.tableData[i].checkout_date = date_out.getFullYear() + '-' + (date_out.getMonth() + 1) + '-' + date_out.getDate();
                                 }
+                                if (res.data.data.elderly[i].created != null) {
+                                    var date_out = new Date(res.data.data.elderly[i].created);
+                                    var y = date_out.getFullYear()
+                                    var m = (date_out.getMonth() + 1 < 10 ? '0' + (date_out.getMonth() + 1) : date_out.getMonth() + 1)
+                                    var d = (date_out.getDate() < 10 ? '0' + (date_out.getDate()) : date_out.getDate())
+                                    this.tableData[i].created = y + '-' + m + '-' + d;
+                                }
                             }
                         }).catch(err => {
                             console.log(err.response)
@@ -578,6 +595,13 @@ export default {
                                 this.tableData[i].checkout_date = y + '-' + m + '-' + d;
                                 //this.tableData[i].checkout_date = date_out.getFullYear() + '-' + (date_out.getMonth() + 1) + '-' + date_out.getDate();
                             }
+                            if (res.data.data.elderly[i].created != null) {
+                                var date_out = new Date(res.data.data.elderly[i].created);
+                                var y = date_out.getFullYear()
+                                var m = (date_out.getMonth() + 1 < 10 ? '0' + (date_out.getMonth() + 1) : date_out.getMonth() + 1)
+                                var d = (date_out.getDate() < 10 ? '0' + (date_out.getDate()) : date_out.getDate())
+                                this.tableData[i].created = y + '-' + m + '-' + d;
+                            }
                         }
                     }).catch(err => {
                         console.log(err.response)
@@ -634,6 +658,13 @@ export default {
                                 this.tableData[i].checkout_date = y + '-' + m + '-' + d;
                                 //this.tableData[i].checkout_date = date_out.getFullYear() + '-' + (date_out.getMonth() + 1) + '-' + date_out.getDate();
                             }
+                            if (res.data.data.elderly[i].created != null) {
+                                var date_out = new Date(res.data.data.elderly[i].created);
+                                var y = date_out.getFullYear()
+                                var m = (date_out.getMonth() + 1 < 10 ? '0' + (date_out.getMonth() + 1) : date_out.getMonth() + 1)
+                                var d = (date_out.getDate() < 10 ? '0' + (date_out.getDate()) : date_out.getDate())
+                                this.tableData[i].created = y + '-' + m + '-' + d;
+                            }
                         }
                     }).catch(err => {
                         console.log(err.response)
@@ -671,15 +702,15 @@ export default {
                     'Content-Type': 'multipart/form-data'
                 }
             };
-            axios.post(`http://127.0.0.1:5000/upload/upload/1`, { file: file },config).then(res => {
+            axios.post(`http://127.0.0.1:5000/upload/upload/1`, { file: file }, config).then(res => {
                 console.log(res)
-                if(res.data == "file uploaded successfully"){
+                if (res.data == "file uploaded successfully") {
                     this.$message({
                         showClose: true,
                         message: "添加照片成功",
                         type: 'success'
                     })
-                }else{
+                } else {
                     this.$message({
                         showClose: true,
                         message: "添加照片失败",
