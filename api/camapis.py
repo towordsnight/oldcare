@@ -79,9 +79,25 @@ class Camera(BaseCamera):
             使用socket传输照片时需要转为base64编码
             """
             frame = cv2.cvtColor(im0, cv2.COLOR_BGR2RGB)
-            buffer = cv2.imencode('.jpg', frame)[1]
+            result = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+            buffer = cv2.imencode('.jpg', result)[1]
             yield base64.b64encode(buffer)
 
+class Camera2(BaseCamera):
+    @staticmethod
+    def frames():
+        # 此处为自己的视频流url 格式 "rtsp://%s:%s@%s//Streaming/Channels/%d" % (name, pwd, ip, channel)
+        # 例如
+        source = 'rtmp://8.130.83.55:1935/mylive'
+        # source = 'rtsp://8.130.83.55:8554/live'
+        # source = '0'
+        dataset = LoadStreams(source)
+        for im0s in dataset:
+            im0 = im0s[0].copy()
+            frame = cv2.cvtColor(im0, cv2.COLOR_BGR2RGB)
+            result = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+            buffer = cv2.imencode('.jpg', result)[1]
+            yield base64.b64encode(buffer)
 
 # <img src="{{url_for('cam/video_play')}}" class="img-fluid" height="500">
 @app.route('/video_feed')
@@ -132,10 +148,25 @@ def video_thread1(camera):
     while True:
         frame = camera.get_frame()
         queue_img1.enqueue(frame)
-        sleep(0.03)
+        sleep(0.05)
         if video_opend:
             break
 
+
+"""
+远程摄像头
+跌倒检测算法
+"""
+def video_thread2(camera):
+    global video_opend
+    """算法加载
+
+    """
+    while True:
+        frame = camera.get_frame()
+        if not video_opend:
+            queue_img2.enqueue(frame)
+        sleep(0.05)
 
 
 @socketio.on('connect', namespace=name_space)
@@ -155,6 +186,8 @@ def test_connect():
 
 
 def background_thread():
+
+    global video_opend
     """
     该线程专门用来给前端发送消息
     :return:
@@ -164,9 +197,16 @@ def background_thread():
         """一旦建立连接线程一直存在"""
         with app.app_context():
             # socketio.emit('server_response', "test", room=None, namespace=name_space)
-            if not queue_img1.isNull():
-                socketio.emit('img', queue_img1.dequeue(), room=None, namespace=name_space)
-        socketio.sleep(0.03)
+            if video_opend:
+                if not queue_img1.isNull():
+                    socketio.emit('img', queue_img1.dequeue(), room=None, namespace=name_space)
+
+            else:
+                if not queue_img2.isNull():
+                    socketio.emit('img', queue_img2.dequeue(), room=None, namespace=name_space)
+
+            socketio.emit('server_response',"this is a test", room=None, namespace=name_space)
+        socketio.sleep(0.05)
 
 
 @socketio.on('disconnect', namespace=name_space)
@@ -183,4 +223,6 @@ def mtest_message(message):
 
 
 if __name__ == '__main__':
+    thread_video =Thread(target=video_thread2, args=(Camera2(),))
+    thread_video.start()
     socketio.run(app, host='0.0.0.0', port=5001)
