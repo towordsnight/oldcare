@@ -12,9 +12,12 @@ from time import sleep
 thread = None
 thread_lock = Lock()
 video_thread_lock = Lock()
-
+video_thread_lockr = Lock()
 # 本地摄像头
 thread_video1 = None
+
+# 远程摄像头
+thread_video2 = None
 
 # 事件线程
 msg_thread = None
@@ -141,9 +144,21 @@ def video_org():
             thread_video1 = Thread(target=video_thread1, args=(Camera(),))
             thread_video1.start()
 
-    return "thread start"
+    return "thread1 start"
 
 
+@app.route('/video_remote')
+def video_rem():
+    global thread_video2  # 全局变量thread
+
+    with video_thread_lockr:  # 该行实现了系统同时只能有一个连接，因为全局变量thread只有一个，确保当有两个客户端同时访问时不会对thread重复赋值
+        print(video_thread2)
+        if thread_video2 is None:
+            # 如果socket连接，则开启一个线程，专门给前端发送消息
+            thread_video2 = Thread(target=video_thread2, args=(Camera2(),))
+            thread_video2.start()
+
+    return "thread2 start"
 
 """
 本地摄像头线程，
@@ -159,7 +174,7 @@ def video_thread1(camera):
         queue_img1.enqueue(frame)
         sleep(0.05)
         # 本地摄像头未打开
-        if not video_opend:
+        if video_opend == False:
             break
 
 
@@ -169,6 +184,7 @@ def video_thread1(camera):
 """
 def video_thread2(camera):
     global video_opend
+
     """算法加载
 
     """
@@ -178,7 +194,7 @@ def video_thread2(camera):
             print("无法获取远程视频流")
             break
 
-        if not video_opend:
+        if video_opend == False:
             queue_img2.enqueue(frame)
         sleep(0.05)
 
@@ -215,7 +231,7 @@ def background_thread():
                 if not queue_img1.isNull():
                     socketio.emit('img', queue_img1.dequeue(), room=None, namespace=name_space)
 
-            if not video_opend:
+            else:
                 if not queue_img2.isNull():
                     socketio.emit('img', queue_img2.dequeue(), room=None, namespace=name_space)
 
@@ -237,6 +253,4 @@ def mtest_message(message):
 
 
 if __name__ == '__main__':
-    thread_video =Thread(target=video_thread2, args=(Camera2(),))
-    thread_video.start()
     socketio.run(app, host='0.0.0.0', port=5001)
