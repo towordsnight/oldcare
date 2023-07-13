@@ -88,16 +88,20 @@ class Camera2(BaseCamera):
     def frames():
         # 此处为自己的视频流url 格式 "rtsp://%s:%s@%s//Streaming/Channels/%d" % (name, pwd, ip, channel)
         # 例如
-        source = 'rtmp://8.130.83.55:1935/mylive'
-        # source = 'rtsp://8.130.83.55:8554/live'
+        # source = 'rtmp://8.130.83.55:1935/mylive'
+        source = 'rtsp://8.130.83.55:8554/live'
         # source = '0'
-        dataset = LoadStreams(source)
-        for im0s in dataset:
-            im0 = im0s[0].copy()
-            frame = cv2.cvtColor(im0, cv2.COLOR_BGR2RGB)
-            result = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-            buffer = cv2.imencode('.jpg', result)[1]
-            yield base64.b64encode(buffer)
+        try:
+            dataset = LoadStreams(source)
+            for im0s in dataset:
+                im0 = im0s[0].copy()
+                frame = cv2.cvtColor(im0, cv2.COLOR_BGR2RGB)
+                result = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+                buffer = cv2.imencode('.jpg', result)[1]
+                yield base64.b64encode(buffer)
+        except ImportError:
+            print("无视频源")
+
 
 # <img src="{{url_for('cam/video_play')}}" class="img-fluid" height="500">
 @app.route('/video_feed')
@@ -201,7 +205,7 @@ def background_thread():
                 if not queue_img1.isNull():
                     socketio.emit('img', queue_img1.dequeue(), room=None, namespace=name_space)
 
-            else:
+            if not video_opend:
                 if not queue_img2.isNull():
                     socketio.emit('img', queue_img2.dequeue(), room=None, namespace=name_space)
 
