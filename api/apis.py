@@ -318,7 +318,7 @@ def add_eld():
 @index_page.route('/elderly/upload_profile', methods=['POST'])
 def upload_profile_eld():
     data = request.get_json()
-    if upload_volunteer_profile(data.get("elderlyID"), data.get("base")):
+    if upload_elderly_profile(data.get("elderlyID"), data.get("base")):
         imagedata = base64.b64decode(data.get("base"))
         file = open(os.path.join(UPLOAD_FOLDER_ELD, data.get("id_card") + ".png"), "wb")
         file.write(imagedata)

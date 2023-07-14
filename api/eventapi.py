@@ -36,3 +36,33 @@ def get_event():
     return response
 
 
+
+@event.route('/search_bydate', methods=['POST'])
+def get_event_bydate():
+    data = request.get_json()
+    # 根据elderlyName查询数据库中对应的所有信息
+    events = get_event_info_bydate(data.get('event_start'))
+    # 如果没有找到对应的老人信息
+    if events is None:
+        response = {
+            'error': '不存在',
+        }
+        return jsonify(response), 200
+
+    events_list = []
+
+    for event in events:
+        event_info = {
+            'eventID': event.eventID,
+            'event_type': event.event_type,
+            'event_start': event.event_start,
+            'event_location': event.event_location,
+            'oldperson_id': event.oldperson_id,
+            'elderlyName': event.elderlyName
+        }
+        events_list.append(event_info)
+    response = {
+        'status': 'success',
+        'data': events_list
+    }
+    return response

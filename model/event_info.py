@@ -1,10 +1,13 @@
+from sqlalchemy import func
+
 from entity.Event import Event as EventInfo
 from config import sqlInit
 from sqlalchemy.orm import sessionmaker
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta, date
 
 Session = sessionmaker(bind=sqlInit.db)
+
 
 def get_event_info_by_id(id):
     session = Session()
@@ -20,7 +23,8 @@ def get_event_info_by_id(id):
 
 def add_event_info(event_type, event_location, oldperson_id, elderlyName):
     session = Session()
-    user = EventInfo(event_type=event_type, event_start=datetime.now(), event_location=event_location, oldperson_id=oldperson_id,
+    user = EventInfo(event_type=event_type, event_start=datetime.now(), event_location=event_location,
+                     oldperson_id=oldperson_id,
                      elderlyName=elderlyName
                      )
     print(user)
@@ -53,7 +57,7 @@ def get_event_info_list(event_type):
         if event_type is None:
             q = q.filter().order_by(EventInfo.event_start.desc()).all()
         else:
-            q = q.filter(EventInfo.event_type == event_type).order_by(EventInfo.event_start.desc()).all()
+            q = q.filter(EventInfo.event_type.like("%" + event_type + "%")).order_by(EventInfo.event_start.desc()).all()
     except Exception as e:
         logging.error(e)
         return None
@@ -68,10 +72,11 @@ def get_event_info_bydate(event_start):
         if event_start is None:
             q = q.filter().order_by(EventInfo.event_start.desc()).all()
         else:
-            q = q.filter(EventInfo.event_start.strftime('%Y-%m-%d') == event_start).order_by(EventInfo.event_start.desc()).all()
+            time1 = datetime.strptime(event_start, '%Y-%m-%d').date()
+
+            q = q.filter(func.date(EventInfo.event_start) == time1).order_by(EventInfo.event_start.desc()).all()
     except Exception as e:
         logging.error(e)
         return None
     session.close()
     return q
-
