@@ -135,36 +135,43 @@
         <el-table :data="tableData" style="width: 100%">
             <el-table-column fixed type="expand">
                 <template #default="props">
-                    <div style="margin-left: 50px;">
-                        <div style="margin-top: 5px;">
-                            <span style="display: inline-block;width: 240px;font-size: 16px;">健康状况：{{
-                                props.row.health_state }}</span>
+                    <div style="display: flex;flex-direction: row;">
+                        <!-- 照片 -->
+                        <div style="width: 200px;height:150px;margin-left: 50px;">
+                            <img :src="props.row.profile_photo" style="width: 200px;height:150px;"> 
                         </div>
-                        <div style="margin-top: 5px;">
-                            <span style="font-size: 16px;">描述：{{
-                                props.row.description }}</span>
-                        </div>
-                        <div style="margin-top: 5px;">
-                            <span style="display: inline-block;width: 240px;font-size: 16px;">第一监护人姓名：{{
-                                props.row.first_guardian_name }}</span>
-                            <span style="display: inline-block;width: 260px;font-size: 16px;">与第一监护人关系：{{
-                                props.row.first_guardian_relationship }}</span>
-                            <span style="display: inline-block;width: 290px;font-size: 16px;">第一监护人电话：{{
-                                props.row.first_guardian_phone }}</span>
-                        </div>
-                        <div style="margin-top: 5px;">
-                            <span style="display: inline-block;width: 240px;font-size: 16px;">第二监护人姓名：{{
-                                props.row.second_guardian_name }}</span>
-                            <span style="display: inline-block;width: 260px;font-size: 16px;">与第二监护人关系：{{
-                                props.row.second_guardian_relationship }}</span>
-                            <span style="display: inline-block;width: 290px;font-size: 16px;">第二监护人电话：{{
-                                props.row.second_guardian_phone }}</span>
-                        </div>
-                        <div style="margin-top: 5px;">
-                            <span style="display: inline-block;width: 500px;font-size: 16px;">创建时间：{{
-                                props.row.created }}</span>
-                            <span style="display: inline-block;width: 240px;font-size: 16px;">创建人：{{
-                                props.row.createdby }}</span>
+                        <!-- 信息 -->
+                        <div style="margin-left: 20px;">
+                            <div style="margin-top: 5px;">
+                                <span style="display: inline-block;width: 240px;font-size: 16px;">健康状况：{{
+                                    props.row.health_state }}</span>
+                            </div>
+                            <div style="margin-top: 5px;">
+                                <span style="font-size: 16px;">描述：{{
+                                    props.row.description }}</span>
+                            </div>
+                            <div style="margin-top: 5px;">
+                                <span style="display: inline-block;width: 240px;font-size: 16px;">第一监护人姓名：{{
+                                    props.row.first_guardian_name }}</span>
+                                <span style="display: inline-block;width: 260px;font-size: 16px;">与第一监护人关系：{{
+                                    props.row.first_guardian_relationship }}</span>
+                                <span style="display: inline-block;width: 290px;font-size: 16px;">第一监护人电话：{{
+                                    props.row.first_guardian_phone }}</span>
+                            </div>
+                            <div style="margin-top: 5px;">
+                                <span style="display: inline-block;width: 240px;font-size: 16px;">第二监护人姓名：{{
+                                    props.row.second_guardian_name }}</span>
+                                <span style="display: inline-block;width: 260px;font-size: 16px;">与第二监护人关系：{{
+                                    props.row.second_guardian_relationship }}</span>
+                                <span style="display: inline-block;width: 290px;font-size: 16px;">第二监护人电话：{{
+                                    props.row.second_guardian_phone }}</span>
+                            </div>
+                            <div style="margin-top: 5px;">
+                                <span style="display: inline-block;width: 500px;font-size: 16px;">创建时间：{{
+                                    props.row.created }}</span>
+                                <span style="display: inline-block;width: 240px;font-size: 16px;">创建人：{{
+                                    props.row.createdby }}</span>
+                            </div>
                         </div>
                     </div>
                 </template>
@@ -279,8 +286,22 @@
 
     <!-- 添加照片弹出框 -->
     <div>
-        <el-dialog v-model="addOldPicVisible" title="添加照片" style="width:985px;">
-            <div style="display: flex;flex-direction: row;">
+        <el-dialog v-model="addOldPicVisible" title="添加照片" style="width:985px;height:650px;">
+            <div style="width:900px;height:400px;display:flex;flex-direction: row;">
+                <video ref="video" style="height:300px;"></video>
+                <canvas style="display: none" id="canvasCamera"></canvas>
+                <div v-if="imgSrc" style="height:150px;width: 200px;">
+                    <img :src="imgSrc" style="height:150px;width: 200px;" />
+                </div>
+
+            </div>
+            <div style="margin-top: 20px;">
+                <button @click="OpenCamera">打开摄像头</button>
+                <button @click="CloseCamera">关闭摄像头</button>
+                <button @click="setImage">拍照</button>
+                <button @click="uploadImg">上传</button>
+            </div>
+            <!-- <div style="display: flex;flex-direction: row;">
                 <div style="margin-left:30px;width:450px;height:210px;">
                     <el-form-item label="人脸照片：">
                         <el-upload ref="upload" class="upload-demo" :auto-upload="false" :on-change="loadPicFile" :limit="1"
@@ -290,7 +311,7 @@
                         </el-upload>
                     </el-form-item>
                 </div>
-            </div>
+            </div> -->
             <template #footer>
                 <span class="dialog-footer">
                     <el-button @click="addOldPicVisible = false">取消</el-button>
@@ -320,6 +341,14 @@ export default {
             face_file: [],
             addOldPicVisible: false,
             id_card_pic: "",
+            elderlyID_pic: "",
+            elderlyName_pic: "",
+
+            mediaStreamTrack: {},
+            video_stream: '', // 视频stream
+            imgSrc: '', // 拍照图片
+            canvas: null,
+            context: null,
         }
     },
     created() {
@@ -356,6 +385,7 @@ export default {
                     var d = (date_out.getDate() < 10 ? '0' + (date_out.getDate()) : date_out.getDate())
                     this.tableData[i].created = y + '-' + m + '-' + d;
                 }
+                this.tableData[i].profile_photo = 'data:image/png;base64,' + res.data.data.elderly[i].profile_photo
             }
         }).catch(err => {
             console.log(err.response)
@@ -416,6 +446,7 @@ export default {
                                 var d = (date_out.getDate() < 10 ? '0' + (date_out.getDate()) : date_out.getDate())
                                 this.tableData[i].created = y + '-' + m + '-' + d;
                             }
+                            this.tableData[i].profile_photo = 'data:image/png;base64,' + res.data.data[i].profile_photo
                         }
                     } else {
                         this.$message({
@@ -522,6 +553,7 @@ export default {
                                     var d = (date_out.getDate() < 10 ? '0' + (date_out.getDate()) : date_out.getDate())
                                     this.tableData[i].created = y + '-' + m + '-' + d;
                                 }
+                                this.tableData[i].profile_photo = 'data:image/png;base64,' + res.data.data.elderly[i].profile_photo
                             }
                         }).catch(err => {
                             console.log(err.response)
@@ -602,6 +634,7 @@ export default {
                                 var d = (date_out.getDate() < 10 ? '0' + (date_out.getDate()) : date_out.getDate())
                                 this.tableData[i].created = y + '-' + m + '-' + d;
                             }
+                            this.tableData[i].profile_photo = 'data:image/png;base64,' + res.data.data.elderly[i].profile_photo
                         }
                     }).catch(err => {
                         console.log(err.response)
@@ -665,6 +698,7 @@ export default {
                                 var d = (date_out.getDate() < 10 ? '0' + (date_out.getDate()) : date_out.getDate())
                                 this.tableData[i].created = y + '-' + m + '-' + d;
                             }
+                            this.tableData[i].profile_photo = 'data:image/png;base64,' + res.data.data.elderly[i].profile_photo
                         }
                     }).catch(err => {
                         console.log(err.response)
@@ -681,9 +715,88 @@ export default {
                 console.log(err.response)
             })
         },
+        // 调用打开摄像头功能
+        getCamera() {
+            // 获取 canvas 画布
+            this.canvas = document.getElementById('canvasCamera');
+            this.context = this.canvas.getContext('2d');
+            // 旧版本浏览器可能根本不支持mediaDevices，我们首先设置一个空对象
+            if (navigator.mediaDevices === undefined) {
+                navigator.mediaDevices = {};
+            }
+            // 正常支持版本
+            navigator.mediaDevices
+                .getUserMedia({
+                    video: true,
+                })
+                .then((stream) => {
+                    // 摄像头开启成功
+                    this.mediaStreamTrack = typeof stream.stop === 'function' ? stream : stream.getTracks()[0];
+                    this.video_stream = stream;
+                    this.$refs.video.srcObject = stream;
+                    this.$refs.video.play();
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+        },
+        // 拍照 绘制图片
+        setImage() {
+            console.log('拍照');
+            // 点击canvas画图
+            this.context.drawImage(
+                this.$refs.video,
+                0,
+                0,
+                200,
+                100,
+            );
+            // 获取图片base64链接
+            const image = this.canvas.toDataURL('image/png');
+            this.imgSrc = image;
+            this.$emit('refreshDataList', this.imgSrc);
+            // console.log(this.imgSrc)
+            // console.log(this.imgSrc.slice(22))
+        },
+        // 打开摄像头
+        OpenCamera() {
+
+            console.log('打开摄像头');
+            this.getCamera();
+        },
+        // 关闭摄像头
+        CloseCamera() {
+
+            console.log('关闭摄像头');
+            this.$refs.video.srcObject.getTracks()[0].stop();
+        },
+        //上传照片
+        uploadImg() {
+            var base_img = this.imgSrc.slice(22)
+            axios.post(`http://127.0.0.1:5000/elderly/upload_profile`, { elderlyID: this.elderlyID_pic, id_card: this.elderlyName_pic, base: base_img }).then(res => {
+                console.log(res)
+                if (res.data.status == "success") {
+                    this.$message({
+                        showClose: true,
+                        message: "上传照片成功",
+                        type: 'success'
+                    })
+                } else {
+                    this.$message({
+                        showClose: true,
+                        message: "上传照片失败",
+                        type: 'error'
+                    })
+                }
+            }).catch(err => {
+                console.log(err.response)
+            })
+        },
         //表格中的添加照片按钮
         addOldPicBtn(row) {
             this.id_card_pic = row.id_card
+            this.elderlyID_pic = row.elderlyID
+            this.elderlyName_pic = row.elderlyName
             this.addOldPicVisible = true;
         },
         //上传文件onChange钩子函数
@@ -691,35 +804,35 @@ export default {
             this.face_file = fileList
         },
         addOldPic() {
-            let file1 = this.face_file[0].raw;//这里获取上传的文件对象
-            console.log(file1)
-            const file = new File([file1], `${this.id_card_pic}${file1.name.slice(file1.name.length - 4, file1.name.length)}`)
-            console.log(file)
-            let formData = new FormData()
-            formData.append('file', file);
-            const config = {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            };
-            axios.post(`http://127.0.0.1:5000/upload/upload/1`, { file: file }, config).then(res => {
-                console.log(res)
-                if (res.data == "file uploaded successfully") {
-                    this.$message({
-                        showClose: true,
-                        message: "添加照片成功",
-                        type: 'success'
-                    })
-                } else {
-                    this.$message({
-                        showClose: true,
-                        message: "添加照片失败",
-                        type: 'error'
-                    })
-                }
-            }).catch(err => {
-                console.log(err.response)
-            })
+            // let file1 = this.face_file[0].raw;//这里获取上传的文件对象
+            // console.log(file1)
+            // const file = new File([file1], `${this.id_card_pic}${file1.name.slice(file1.name.length - 4, file1.name.length)}`)
+            // console.log(file)
+            // let formData = new FormData()
+            // formData.append('file', file);
+            // const config = {
+            //     headers: {
+            //         'Content-Type': 'multipart/form-data'
+            //     }
+            // };
+            // axios.post(`http://127.0.0.1:5000/upload/upload/1`, { file: file }, config).then(res => {
+            //     console.log(res)
+            //     if (res.data == "file uploaded successfully") {
+            //         this.$message({
+            //             showClose: true,
+            //             message: "添加照片成功",
+            //             type: 'success'
+            //         })
+            //     } else {
+            //         this.$message({
+            //             showClose: true,
+            //             message: "添加照片失败",
+            //             type: 'error'
+            //         })
+            //     }
+            // }).catch(err => {
+            //     console.log(err.response)
+            // })
             this.addOldPicVisible = false;
         }
     }

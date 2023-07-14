@@ -36,11 +36,11 @@ export default {
         axios.post(`http://127.0.0.1:5000/event/search`, { event_type: null }).then(res => {
             console.log(res)
             this.tableData = res.data.data;
-            for (let i = 0; i < res.data.data.length; i++) {
-                if (res.data.data[i].event_type == 0) {
+            // for (let i = 0; i < res.data.data.length; i++) {
+            //     if (res.data.data[i].event_type == 0) {
 
-                }
-            }
+            //     }
+            // }
         }).catch(err => {
             console.log(err.response)
         })
@@ -56,7 +56,25 @@ export default {
     return '';
   },
         searchInf() {
-
+            axios.post(`http://127.0.0.1:5000/event/search_bydate`, { event_start: this.searchData.date}).then(res => {
+                console.log(res)
+                if (res.data.status == "success") {
+                    this.$message({
+                        showClose: true,
+                        message: "搜索成功",
+                        type: 'success'
+                    })
+                    this.tableData = res.data.data
+                } else {
+                    this.$message({
+                        showClose: true,
+                        message: "搜索失败",
+                        type: 'error'
+                    })
+                }
+            }).catch(err => {
+                console.log(err.response)
+            })
         },
     }
 }
