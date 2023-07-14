@@ -10,7 +10,7 @@ class Event(Base):
     __tablename__ = 'event'
 
     eventID = Column(Integer, primary_key=True)
-    event_type = Column(Integer, nullable=False)
+    event_type = Column(String(50, 'utf8_general_ci'), nullable=False)
     event_start = Column(DateTime, nullable=False)
     event_location = Column(String(20))
     oldperson_id = Column(Integer)

@@ -55,46 +55,12 @@ def get_volunterr_info_list(username):
     return result
 
 
-def get_volunteer_checkin_count_by_day(today, tomorrow):
-    session = Session()
-    try:
-        result = session.query(VolunteerInfo).filter(VolunteerInfo.checkin_date >= today,
-                                                     VolunteerInfo.checkin_date <= tomorrow).count()
-    except Exception as e:
-        logging.error(e)
-        return None
-    session.close()
-    return result
-
-
-def get_volunteer_count_by_gender(sex):
-    session = Session()
-    try:
-        result = session.query(VolunteerInfo).filter(VolunteerInfo.gender == sex).count()
-    except Exception as e:
-        logging.error(e)
-        return None
-    session.close()
-    return result
-
-
-def get_volunteer_checkout_count_by_day(today, tomorrow):
-    session = Session()
-    try:
-        result = session.query(VolunteerInfo).filter(VolunteerInfo.checkout_date >= today,
-                                                     VolunteerInfo.checkout_date <= tomorrow).count()
-    except Exception as e:
-        logging.error(e)
-        return None
-    session.close()
-    return result
-
 
 def add_volunteer_info(username, age, gender, id_card, checkin_date, checkout_date, phone,description, createby):
     session = Session()
     person = VolunteerInfo(volunteerName=username, age=age, gender=gender, phone=phone, id_card=id_card,checkout_date=checkout_date,
-                           checkin_date=checkin_date, profile_photo=id_card + ".jpg", description=description,
-                           createby=createby, created=time.localtime(), imgset_dir="img\\volunteer\\")
+                           checkin_date=checkin_date, description=description,
+                           createby=createby, created=time.localtime())
     p = None
     try:
         result = session.add(person)
@@ -125,7 +91,7 @@ def add_volunteer(VolunteerInfo):
 
 
 def update_volunteer_info_by_id(id, username, gender, age, phone, id_card, checkin_date, checkout_date,
-                                DESCRIPTION, imgset_dir, profile_photo, creatby):
+                                DESCRIPTION, creatby):
     session = Session()
 
     person = VolunteerInfo()
@@ -145,10 +111,6 @@ def update_volunteer_info_by_id(id, username, gender, age, phone, id_card, check
         person.checkout_date = checkout_date
     if DESCRIPTION is not None:
         person.description = DESCRIPTION
-    if imgset_dir is not None:
-        person.imgset_dir = imgset_dir
-    if profile_photo is not None:
-        person.profile_photo = profile_photo
     if creatby is not None:
         person.createby = creatby
     try:
@@ -167,6 +129,24 @@ def delete_volunteer_info_by_id(id):
     session = Session()
     try:
         session.query(VolunteerInfo).filter(VolunteerInfo.volunteerID == id).delete()
+        session.commit()
+    except Exception as e:
+        logging.error(e)
+        return False
+    session.close()
+    return True
+
+
+def upload_volunteer_profile(volunteerID, base_64):
+    session = Session()
+
+    person = VolunteerInfo()
+    if base_64 is not None:
+        person.profile_photo = base_64
+    try:
+        u = person.__dict__
+        u.pop("_sa_instance_state")
+        row = session.query(VolunteerInfo).filter(VolunteerInfo.volunteerID == volunteerID).update(u)
         session.commit()
     except Exception as e:
         logging.error(e)

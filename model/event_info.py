@@ -60,3 +60,18 @@ def get_event_info_list(event_type):
     session.close()
     return q
 
+
+def get_event_info_bydate(event_start):
+    session = Session()
+    try:
+        q = session.query(EventInfo)
+        if event_start is None:
+            q = q.filter().order_by(EventInfo.event_start.desc()).all()
+        else:
+            q = q.filter(EventInfo.event_start.strftime('%Y-%m-%d') == event_start).order_by(EventInfo.event_start.desc()).all()
+    except Exception as e:
+        logging.error(e)
+        return None
+    session.close()
+    return q
+

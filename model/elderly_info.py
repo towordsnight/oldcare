@@ -64,46 +64,6 @@ def get_old_person_info_list(username):
     return result
 
 
-def get_old_person_info_count(content):
-    session = Session()
-    try:
-        if content == None:
-            result = session.query(OldPersonInfo).filter().count()
-        else:
-            result = session.query(OldPersonInfo).filter(OldPersonInfo.elderlyName.like("%" + content + "%")).count()
-    except Exception as e:
-        logging.error(e)
-        return None
-    session.close()
-    return result
-
-
-def get_old_person_info_count_by_id(content):
-    session = Session()
-    try:
-        if content == None:
-            result = session.query(OldPersonInfo).count()
-        else:
-            result = session.query(OldPersonInfo).filter(OldPersonInfo.elderlyID == content).count()
-    except Exception as e:
-        logging.error(e)
-        return None
-    session.close()
-    return result
-
-
-def get_old_person_checkin_count_by_day(today, tomorrow):
-    session = Session()
-    try:
-        result = session.query(OldPersonInfo).filter(OldPersonInfo.checkin_date >= today,
-                                                     OldPersonInfo.checkin_date <= tomorrow).count()
-    except Exception as e:
-        logging.error(e)
-        return None
-    session.close()
-    return result
-
-
 def get_old_person_count_by_gender(sex):
     session = Session()
     try:
@@ -128,14 +88,13 @@ def get_old_person_checkout_count_by_day(today, tomorrow):
 
 
 def add_old_person_info(username, age, gender, phone, id_card, birthday, checkin_date, checkout_date,
-                        address, imgset_dir,
-                        profile_photo, room_number,
+                        address, profile_photo, room_number,
                         firstguardian_name, firstguardian_relationship, firstguardian_phone,
                         secondguardian_name, secondguardian_relationship, secondguardian_phone,
                         health_state, DESCRIPTION, CREATEBY):
     session = Session()
     person = OldPersonInfo(elderlyName=username, age=age, gender=gender, phone=phone, id_card=id_card, birthday=birthday,
-                           checkin_date=checkin_date, checkout_date=checkout_date, imgset_dir=imgset_dir, address=address,
+                           checkin_date=checkin_date, checkout_date=checkout_date, address=address,
                            profile_photo=profile_photo,room_number=room_number,
                            first_guardian_name=firstguardian_name,
                            first_guardian_phone=firstguardian_phone,
@@ -175,8 +134,7 @@ def add_old_person(OldPersonInfo):
 
 
 def update_oldperson_info_by_id(ID, username, age, gender, phone, id_card, birthday, checkin_date, checkout_date,
-                                address, imgset_dir,
-                                profile_photo, room_number,
+                                address, room_number,
                                 firstguardian_name, firstguardian_relationship, firstguardian_phone,
                                 secondguardian_name, secondguardian_relationship, secondguardian_phone,
                                 health_state, DESCRIPTION, CREATEBY):
@@ -204,10 +162,6 @@ def update_oldperson_info_by_id(ID, username, age, gender, phone, id_card, birth
         person.checkout_date = checkout_date
     if address is not None:
         person.address = address
-    if imgset_dir is not None:
-        person.imgset_dir = imgset_dir
-    if profile_photo is not None:
-        person.profile_photo = profile_photo
     if room_number is not None:
         person.room_number = room_number
     if firstguardian_name is not None:
@@ -240,6 +194,22 @@ def update_oldperson_info_by_id(ID, username, age, gender, phone, id_card, birth
     session.close()
     return True
 
+def upload_elderly_profile(elderlyID, base_64):
+    session = Session()
+
+    person = OldPersonInfo()
+    if base_64 is not None:
+        person.profile_photo = base_64
+    try:
+        u = person.__dict__
+        u.pop("_sa_instance_state")
+        row = session.query(OldPersonInfo).filter(OldPersonInfo.elderlyID == elderlyID).update(u)
+        session.commit()
+    except Exception as e:
+        logging.error(e)
+        return False
+    session.close()
+    return True
 
 def delete_old_person_info_by_id(id):
     session = Session()
